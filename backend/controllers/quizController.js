@@ -4,14 +4,13 @@ require('dotenv').config();
 
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 
-// Generate quiz based on weaknesses and skills to improve
-async function generateQuiz(weaknesses, skillsToImprove) {
+// Generate quiz based on a single weakness
+async function generateQuizForWeakness(weakness) {
   try {
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
     const quizPrompt = `
-    Based on the following weaknesses and skills to improve, create a quiz with 10 multiple choice questions to help the candidate improve these areas:
-    Weaknesses: ${weaknesses.join(', ')}
-    Skills to Improve: ${skillsToImprove.join(', ')}
+    Based on the following weakness, create a quiz with 5 multiple choice questions to help the candidate improve in this area:
+    Weakness: ${weakness}
     Format your response as a JSON object with this structure:
     {
       "questions": [
@@ -24,8 +23,8 @@ async function generateQuiz(weaknesses, skillsToImprove) {
         }
       ]
     }
-    Make sure the questions are practical and relevant to improving the identified weaknesses.
-    Ensure you provide exactly 10 questions and that the JSON is valid.
+    Make sure the questions are practical and relevant to improving the identified weakness.
+    Ensure you provide exactly 5 questions and that the JSON is valid.
     `;
     const result = await model.generateContent(quizPrompt);
     const response = await result.response;
@@ -34,7 +33,7 @@ async function generateQuiz(weaknesses, skillsToImprove) {
     if (jsonMatch) {
       const parsedQuiz = JSON.parse(jsonMatch[0]);
       if (parsedQuiz.questions && parsedQuiz.questions.length > 0) {
-        parsedQuiz.questions = parsedQuiz.questions.slice(0, 10);
+        parsedQuiz.questions = parsedQuiz.questions.slice(0, 5);
         return parsedQuiz;
       } else {
         throw new Error('No questions generated');
@@ -48,7 +47,7 @@ async function generateQuiz(weaknesses, skillsToImprove) {
   }
 }
 
-// Controller: Generate Quiz
+// Controller: Generate Quizzes for Each Weakness
 async function generateQuizHandler(req, res) {
   try {
     const { analysisId } = req.params;
@@ -60,22 +59,25 @@ async function generateQuizHandler(req, res) {
       return res.status(404).json({ error: 'Analysis not found. Please analyze a resume first.' });
     }
     const weaknesses = analysis.analysisStructured?.weaknesses || [];
-    const skillsToImprove = analysis.analysisStructured?.skillsToImprove || [];
-    if (weaknesses.length === 0 && skillsToImprove.length === 0) {
-      return res.status(400).json({ error: 'No weaknesses or skills to improve found in the analysis.' });
+    if (weaknesses.length === 0) {
+      return res.status(400).json({ error: 'No weaknesses found in the analysis.' });
     }
-    const quiz = await generateQuiz(weaknesses, skillsToImprove);
+    // Generate a quiz for each weakness
+    const quizzes = [];
+    for (const weakness of weaknesses) {
+      const quiz = await generateQuizForWeakness(weakness);
+      quizzes.push({ weakness, quiz });
+    }
     res.json({
-      quiz: quiz,
+      quizzes: quizzes,
       basedOn: {
-        weaknesses: weaknesses,
-        skillsToImprove: skillsToImprove
+        weaknesses: weaknesses
       },
       success: true
     });
   } catch (error) {
-    console.error('Error generating quiz:', error);
-    res.status(500).json({ error: error.message || 'Failed to generate quiz' });
+    console.error('Error generating quizzes:', error);
+    res.status(500).json({ error: error.message || 'Failed to generate quizzes' });
   }
 }
 

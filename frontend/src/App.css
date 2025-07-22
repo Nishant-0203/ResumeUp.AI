@@ -231,6 +231,7 @@
   background: #f0f8ff;
   border-radius: 10px;
   border-left: 4px solid #007bff;
+  color: #000 !important;
 }
 
 .quiz-progress {
@@ -391,6 +392,10 @@
 
 .reset-quiz-button:hover {
   background: #5a6268;
+}
+
+.structured-summary, .summary-item {
+  color: #000 !important;
 }
 @media (max-width: 768px) {
   .container {

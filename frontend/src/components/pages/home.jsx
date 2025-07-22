@@ -10,13 +10,15 @@ const App = () => {
   const [structuredData, setStructuredData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [quiz, setQuiz] = useState(null);
+  // Multi-quiz state
+  const [quizzes, setQuizzes] = useState([]); // Array of { weakness, quiz }
   const [quizLoading, setQuizLoading] = useState(false);
   const [showQuiz, setShowQuiz] = useState(false);
+  const [currentQuizIndex, setCurrentQuizIndex] = useState(0);
   const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [selectedAnswers, setSelectedAnswers] = useState({});
+  const [selectedAnswers, setSelectedAnswers] = useState({}); // { quizIndex: { questionIndex: answerIndex } }
   const [quizCompleted, setQuizCompleted] = useState(false);
-  const [score, setScore] = useState(0);
+  const [scores, setScores] = useState([]); // Array of scores per quiz
   const [showResults, setShowResults] = useState(false);
 
   const handleFileChange = (e) => {
@@ -28,9 +30,10 @@ const App = () => {
       setAnalysis('');
       setAnalysisId('');
       setStructuredData(null);
-      setQuiz(null);
+      setQuizzes([]);
       setShowQuiz(false);
       setQuizCompleted(false);
+      setScores([]);
     } else {
       setError('Please select a PDF file');
       setResumeFile(null);
@@ -50,9 +53,10 @@ const App = () => {
     setLoading(true);
     setError('');
     setAnalysis('');
-    setQuiz(null);
+    setQuizzes([]);
     setShowQuiz(false);
     setQuizCompleted(false);
+    setScores([]);
 
     try {
       const response = await axios.post('http://localhost:5000/api/analyze-resume', formData, {
@@ -88,40 +92,41 @@ const App = () => {
     setShowResults(false);
 
     try {
-      console.log('Generating quiz for analysis ID:', analysisId);
       const response = await axios.post(`http://localhost:5000/api/generate-quiz/${analysisId}`);
-      
-      if (response.data.success && response.data.quiz) {
-        setQuiz(response.data.quiz);
+      if (response.data.success && response.data.quizzes) {
+        setQuizzes(response.data.quizzes);
         setShowQuiz(true);
+        setCurrentQuizIndex(0);
         setCurrentQuestion(0);
         setSelectedAnswers({});
         setQuizCompleted(false);
-        setScore(0);
-        console.log('Quiz generated successfully:', response.data.quiz.questions?.length, 'questions');
+        setScores([]);
       } else {
-        setError('Quiz generated but there was an issue with the data format.');
+        setError('Quizzes generated but there was an issue with the data format.');
       }
     } catch (err) {
-      console.error('Quiz generation error:', err);
-      setError(err.response?.data?.error || 'Failed to generate quiz. Please try again.');
+      setError(err.response?.data?.error || 'Failed to generate quizzes. Please try again.');
     } finally {
       setQuizLoading(false);
     }
   };
 
-  const handleAnswerSelect = (questionIndex, answerIndex) => {
-    setSelectedAnswers({
-      ...selectedAnswers,
-      [questionIndex]: answerIndex
-    });
+  const handleAnswerSelect = (quizIdx, questionIdx, answerIdx) => {
+    setSelectedAnswers((prev) => ({
+      ...prev,
+      [quizIdx]: {
+        ...(prev[quizIdx] || {}),
+        [questionIdx]: answerIdx
+      }
+    }));
   };
 
   const handleNextQuestion = () => {
+    const quiz = quizzes[currentQuizIndex]?.quiz;
     if (currentQuestion < quiz.questions.length - 1) {
       setCurrentQuestion(currentQuestion + 1);
     } else {
-      calculateScore();
+      calculateScoreForQuiz(currentQuizIndex);
     }
   };
 
@@ -131,25 +136,37 @@ const App = () => {
     }
   };
 
-  const calculateScore = () => {
+  const calculateScoreForQuiz = (quizIdx) => {
+    const quiz = quizzes[quizIdx]?.quiz;
     let correctAnswers = 0;
-    quiz.questions.forEach((question, index) => {
-      if (selectedAnswers[index] === question.correctAnswer) {
+    (quiz.questions || []).forEach((question, qIdx) => {
+      if (selectedAnswers[quizIdx]?.[qIdx] === question.correctAnswer) {
         correctAnswers++;
       }
     });
-    setScore(correctAnswers);
-    setQuizCompleted(true);
-    setShowResults(true);
+    setScores((prev) => {
+      const newScores = [...prev];
+      newScores[quizIdx] = correctAnswers;
+      return newScores;
+    });
+    // If not last quiz, go to next quiz
+    if (quizIdx < quizzes.length - 1) {
+      setCurrentQuizIndex(quizIdx + 1);
+      setCurrentQuestion(0);
+    } else {
+      setQuizCompleted(true);
+      setShowResults(true);
+    }
   };
 
   const resetQuiz = () => {
     setShowQuiz(false);
-    setQuiz(null);
+    setQuizzes([]);
+    setCurrentQuizIndex(0);
     setCurrentQuestion(0);
     setSelectedAnswers({});
     setQuizCompleted(false);
-    setScore(0);
+    setScores([]);
     setShowResults(false);
   };
 
@@ -269,35 +286,33 @@ const App = () => {
             </div>
           )}
 
-          {showQuiz && quiz && !quizCompleted && (
+          {showQuiz && quizzes.length > 0 && !quizCompleted && (
             <div className="quiz-section">
-              <h3>Improvement Quiz</h3>
+              <h3>Quiz for Weakness: {quizzes[currentQuizIndex].weakness}</h3>
               <div className="quiz-header">
                 <div className="quiz-progress">
-                  Question {currentQuestion + 1} of {quiz.questions.length}
+                  Question {currentQuestion + 1} of {quizzes[currentQuizIndex].quiz.questions.length}
                 </div>
                 <div className="quiz-category">
-                  Category: {quiz.questions[currentQuestion].category || 'General'}
+                  Category: {quizzes[currentQuizIndex].quiz.questions[currentQuestion].category || 'General'}
                 </div>
               </div>
-              
               <div className="quiz-question">
-                <h4>{quiz.questions[currentQuestion].question}</h4>
+                <h4>{quizzes[currentQuizIndex].quiz.questions[currentQuestion].question}</h4>
                 <div className="quiz-options">
-                  {quiz.questions[currentQuestion].options.map((option, index) => (
-                    <label key={index} className="quiz-option">
+                  {quizzes[currentQuizIndex].quiz.questions[currentQuestion].options.map((option, idx) => (
+                    <label key={idx} className="quiz-option">
                       <input
                         type="radio"
-                        name={`question-${currentQuestion}`}
-                        value={index}
-                        checked={selectedAnswers[currentQuestion] === index}
-                        onChange={() => handleAnswerSelect(currentQuestion, index)}
+                        name={`question-${currentQuizIndex}-${currentQuestion}`}
+                        value={idx}
+                        checked={selectedAnswers[currentQuizIndex]?.[currentQuestion] === idx}
+                        onChange={() => handleAnswerSelect(currentQuizIndex, currentQuestion, idx)}
                       />
                       <span>{option}</span>
                     </label>
                   ))}
                 </div>
-                
                 <div className="quiz-navigation">
                   <button
                     onClick={handlePreviousQuestion}
@@ -308,53 +323,53 @@ const App = () => {
                   </button>
                   <button
                     onClick={handleNextQuestion}
-                    disabled={selectedAnswers[currentQuestion] === undefined}
+                    disabled={selectedAnswers[currentQuizIndex]?.[currentQuestion] === undefined}
                     className="quiz-nav-button primary"
                   >
-                    {currentQuestion === quiz.questions.length - 1 ? 'Finish Quiz' : 'Next'}
+                    {currentQuestion === quizzes[currentQuizIndex].quiz.questions.length - 1 ?
+                      (currentQuizIndex === quizzes.length - 1 ? 'Finish All Quizzes' : 'Next Quiz') : 'Next'}
                   </button>
                 </div>
               </div>
             </div>
           )}
 
-          {showResults && quizCompleted && quiz && (
+          {showResults && quizCompleted && quizzes.length > 0 && (
             <div className="quiz-results">
-              <h3>Quiz Results</h3>
+              <h3>Combined Quiz Results</h3>
               <div className="score-display">
-                <h4>Your Score: {score}/{quiz.questions.length}</h4>
-                <p>Percentage: {Math.round((score / quiz.questions.length) * 100)}%</p>
-                <div className="performance-message">
-                  {score === quiz.questions.length ? '🎉 Perfect Score!' :
-                   score >= quiz.questions.length * 0.8 ? '👏 Great Job!' :
-                   score >= quiz.questions.length * 0.6 ? '👍 Good Effort!' :
-                   '📚 Keep Learning!'}
-                </div>
+                <h4>Total Score: {scores.reduce((a, b) => a + (b || 0), 0)}/
+                  {quizzes.reduce((a, q) => a + (q.quiz.questions.length || 0), 0)}
+                </h4>
+                <p>Percentage: {Math.round((scores.reduce((a, b) => a + (b || 0), 0) / quizzes.reduce((a, q) => a + (q.quiz.questions.length || 0), 0)) * 100)}%</p>
               </div>
-              
-              <div className="quiz-review">
-                <h4>Review Your Answers:</h4>
-                {quiz.questions.map((question, qIndex) => (
-                  <div key={qIndex} className="question-review">
-                    <p><strong>Q{qIndex + 1}:</strong> {question.question}</p>
-                    <p className="question-category">Category: {question.category || 'General'}</p>
-                    <p className={`answer ${selectedAnswers[qIndex] === question.correctAnswer ? 'correct' : 'incorrect'}`}>
-                      Your answer: {question.options[selectedAnswers[qIndex]] || 'No answer selected'}
-                      {selectedAnswers[qIndex] === question.correctAnswer ? ' ✅' : ' ❌'}
-                    </p>
-                    {selectedAnswers[qIndex] !== question.correctAnswer && (
-                      <p className="correct-answer">
-                        Correct answer: {question.options[question.correctAnswer]} ✅
+              {quizzes.map((qz, quizIdx) => (
+                <div key={quizIdx} className="quiz-review">
+                  <h4>Quiz for Weakness: {qz.weakness}</h4>
+                  {qz.quiz.questions.map((question, qIndex) => (
+                    <div key={qIndex} className="question-review">
+                      <p><strong>Q{qIndex + 1}:</strong> {question.question}</p>
+                      <p className="question-category">Category: {question.category || 'General'}</p>
+                      <p className={`answer ${selectedAnswers[quizIdx]?.[qIndex] === question.correctAnswer ? 'correct' : 'incorrect'}`}>
+                        Your answer: {question.options[selectedAnswers[quizIdx]?.[qIndex]] || 'No answer selected'}
+                        {selectedAnswers[quizIdx]?.[qIndex] === question.correctAnswer ? ' ✅' : ' ❌'}
                       </p>
-                    )}
-                    <p className="explanation"><strong>Explanation:</strong> {question.explanation}</p>
+                      {selectedAnswers[quizIdx]?.[qIndex] !== question.correctAnswer && (
+                        <p className="correct-answer">
+                          Correct answer: {question.options[question.correctAnswer]} ✅
+                        </p>
+                      )}
+                      <p className="explanation"><strong>Explanation:</strong> {question.explanation}</p>
+                    </div>
+                  ))}
+                  <div className="score-display">
+                    <h4>Score: {scores[quizIdx] || 0}/{qz.quiz.questions.length}</h4>
                   </div>
-                ))}
-              </div>
-              
+                </div>
+              ))}
               <div className="quiz-actions">
                 <button onClick={resetQuiz} className="reset-quiz-button">
-                  Take Another Quiz
+                  Take All Quizzes Again
                 </button>
                 <button onClick={resetAll} className="reset-all-button">
                   Analyze New Resume
