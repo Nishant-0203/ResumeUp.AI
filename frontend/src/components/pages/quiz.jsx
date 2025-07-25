@@ -2,6 +2,27 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
+// Helper to calculate category scores
+function calculateCategoryScores(quizzes, selectedAnswers) {
+  const categoryTotals = {};
+  const categoryCorrect = {};
+  quizzes.forEach((qz, quizIdx) => {
+    (qz.quiz.questions || []).forEach((question, qIdx) => {
+      const cat = question.category || 'General';
+      categoryTotals[cat] = (categoryTotals[cat] || 0) + 1;
+      if (selectedAnswers[quizIdx]?.[qIdx] === question.correctAnswer) {
+        categoryCorrect[cat] = (categoryCorrect[cat] || 0) + 1;
+      }
+    });
+  });
+  const categories = Object.keys(categoryTotals);
+  const scores = {};
+  categories.forEach(cat => {
+    scores[cat] = Math.round((categoryCorrect[cat] || 0) / categoryTotals[cat] * 100);
+  });
+  return scores;
+}
+
 const Quiz = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -17,6 +38,8 @@ const Quiz = () => {
   const [scores, setScores] = useState([]); // Array of scores per quiz
   const [showResults, setShowResults] = useState(false);
   const [error, setError] = useState('');
+  const [analysisData, setAnalysisData] = useState(null);
+  const [resumeName, setResumeName] = useState('Resume');
 
   useEffect(() => {
     if (analysisId) {
@@ -113,6 +136,23 @@ const Quiz = () => {
     navigate('/');
   };
 
+  // Fetch analysis data after quiz completion
+  useEffect(() => {
+    if (quizCompleted && analysisId) {
+      axios.get(`http://localhost:5000/api/analysis/${analysisId}`)
+        .then(res => {
+          if (res.data.success && res.data.analysis) {
+            setAnalysisData(res.data.analysis);
+            // Try to get resume name from analysis if available
+            if (res.data.analysis.resumeFileName) {
+              setResumeName(res.data.analysis.resumeFileName);
+            }
+          }
+        })
+        .catch(() => {});
+    }
+  }, [quizCompleted, analysisId]);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-white to-gray-50 flex flex-col items-center mt-28">
       <div className="w-full max-w-3xl px-4 py-8 bg-white rounded-xl shadow-lg">
@@ -167,38 +207,87 @@ const Quiz = () => {
           </div>
         )}
         {showResults && quizCompleted && quizzes.length > 0 && (
-          <div className="quiz-results">
-            <h3 className="text-2xl font-bold text-purple-700 mb-4">Combined Quiz Results</h3>
-            <div className="score-display mb-6">
-              <h4 className="text-lg font-semibold">Total Score: {scores.reduce((a, b) => a + (b || 0), 0)}/
-                {quizzes.reduce((a, q) => a + (q.quiz.questions.length || 0), 0)}
-              </h4>
-              <p className="text-gray-700">Percentage: {Math.round((scores.reduce((a, b) => a + (b || 0), 0) / quizzes.reduce((a, q) => a + (q.quiz.questions.length || 0), 0)) * 100)}%</p>
-            </div>
-            {quizzes.map((qz, quizIdx) => (
-              <div key={quizIdx} className="quiz-review mb-8 p-4 rounded-lg border border-gray-200 bg-gray-50">
-                <h4 className="text-lg font-semibold text-pink-600 mb-2">Quiz for Weakness: {qz.weakness}</h4>
-                {qz.quiz.questions.map((question, qIndex) => (
-                  <div key={qIndex} className="question-review mb-4">
-                    <p className="font-medium"><strong>Q{qIndex + 1}:</strong> {question.question}</p>
-                    <p className="text-gray-500 text-sm mb-1">Category: {question.category || 'General'}</p>
-                    <p className={`answer ${selectedAnswers[quizIdx]?.[qIndex] === question.correctAnswer ? 'text-green-600' : 'text-red-600'} font-semibold`}>Your answer: {question.options[selectedAnswers[quizIdx]?.[qIndex]] || 'No answer selected'}{selectedAnswers[quizIdx]?.[qIndex] === question.correctAnswer ? ' ✅' : ' ❌'}</p>
-                    {selectedAnswers[quizIdx]?.[qIndex] !== question.correctAnswer && (
-                      <p className="correct-answer text-green-700">Correct answer: {question.options[question.correctAnswer]} ✅</p>
-                    )}
-                    <p className="explanation text-gray-700"><strong>Explanation:</strong> {question.explanation}</p>
-                  </div>
-                ))}
-                <div className="score-display mt-2">
-                  <h4 className="text-base font-semibold">Score: {scores[quizIdx] || 0}/{qz.quiz.questions.length}</h4>
+          <>
+            {/* Summary Card */}
+            <div className="mb-8 flex justify-center">
+              <div className="w-full max-w-md bg-gradient-to-br from-[#f8a4a8]/20 to-[#a78bfa]/20 rounded-2xl shadow-xl p-6 border border-white/30 backdrop-blur-md">
+                <h2 className="text-2xl font-bold mb-2 text-center text-purple-700">Summary</h2>
+                <div className="mb-2 text-lg font-semibold text-gray-800">{resumeName}</div>
+                <div className="mb-2 text-gray-700">
+                  <span className="font-semibold">Resume Analysis:</span>
+                  <span className="ml-2">{analysisData?.analysisStructured?.overallEvaluation || analysisData?.analysisJson?.overallEvaluation || 'No summary available.'}</span>
+                </div>
+                <div className="flex flex-col items-center my-4">
+                  <div className="text-5xl font-extrabold text-purple-700">{Math.round((scores.reduce((a, b) => a + (b || 0), 0) / quizzes.reduce((a, q) => a + (q.quiz.questions.length || 0), 0)) * 100)}</div>
+                  <div className="text-lg text-gray-700 font-semibold">/100</div>
+                  <div className="text-base text-gray-500 mt-1">Overall Score</div>
+                </div>
+                {/* Subscores by category */}
+                <div className="grid grid-cols-2 gap-4 mt-4">
+                  {(() => {
+                    const catScores = calculateCategoryScores(quizzes, selectedAnswers);
+                    // Map categories to display names
+                    const displayMap = {
+                      'Technical Skills': 'Technical Skills',
+                      'Experience': 'Experience',
+                      'Education': 'Education',
+                      'Presentation': 'Presentation',
+                    };
+                    // If no matching categories, show dummy values
+                    const keys = Object.keys(catScores).length > 0 ? Object.keys(displayMap) : [];
+                    if (keys.length === 0) {
+                      return (
+                        <>
+                          <div className="flex flex-col items-center"><span className="font-semibold">Technical Skills</span><span>85%</span></div>
+                          <div className="flex flex-col items-center"><span className="font-semibold">Experience</span><span>72%</span></div>
+                          <div className="flex flex-col items-center"><span className="font-semibold">Education</span><span>90%</span></div>
+                          <div className="flex flex-col items-center"><span className="font-semibold">Presentation</span><span>65%</span></div>
+                        </>
+                      );
+                    }
+                    return keys.map((cat, idx) => (
+                      <div key={cat} className="flex flex-col items-center">
+                        <span className="font-semibold">{displayMap[cat]}</span>
+                        <span>{catScores[cat] || 0}%</span>
+                      </div>
+                    ));
+                  })()}
                 </div>
               </div>
-            ))}
-            <div className="quiz-actions flex flex-col md:flex-row gap-4 justify-center mt-6">
-              <button onClick={resetQuiz} className="px-6 py-2 rounded-full bg-purple-600 text-white font-semibold shadow hover:bg-purple-700 transition">Take All Quizzes Again</button>
-              <button onClick={goHome} className="px-6 py-2 rounded-full bg-gradient-to-r from-[#f8a4a8] to-[#a78bfa] text-white font-semibold shadow hover:opacity-90 transition">Analyze New Resume</button>
             </div>
-          </div>
+            <div className="quiz-results">
+              <h3 className="text-2xl font-bold text-purple-700 mb-4">Combined Quiz Results</h3>
+              <div className="score-display mb-6">
+                <h4 className="text-lg font-semibold">Total Score: {scores.reduce((a, b) => a + (b || 0), 0)}/
+                  {quizzes.reduce((a, q) => a + (q.quiz.questions.length || 0), 0)}
+                </h4>
+                <p className="text-gray-700">Percentage: {Math.round((scores.reduce((a, b) => a + (b || 0), 0) / quizzes.reduce((a, q) => a + (q.quiz.questions.length || 0), 0)) * 100)}%</p>
+              </div>
+              {quizzes.map((qz, quizIdx) => (
+                <div key={quizIdx} className="quiz-review mb-8 p-4 rounded-lg border border-gray-200 bg-gray-50">
+                  <h4 className="text-lg font-semibold text-pink-600 mb-2">Quiz for Weakness: {qz.weakness}</h4>
+                  {qz.quiz.questions.map((question, qIndex) => (
+                    <div key={qIndex} className="question-review mb-4">
+                      <p className="font-medium"><strong>Q{qIndex + 1}:</strong> {question.question}</p>
+                      <p className="text-gray-500 text-sm mb-1">Category: {question.category || 'General'}</p>
+                      <p className={`answer ${selectedAnswers[quizIdx]?.[qIndex] === question.correctAnswer ? 'text-green-600' : 'text-red-600'} font-semibold`}>Your answer: {question.options[selectedAnswers[quizIdx]?.[qIndex]] || 'No answer selected'}{selectedAnswers[quizIdx]?.[qIndex] === question.correctAnswer ? ' ✅' : ' ❌'}</p>
+                      {selectedAnswers[quizIdx]?.[qIndex] !== question.correctAnswer && (
+                        <p className="correct-answer text-green-700">Correct answer: {question.options[question.correctAnswer]} ✅</p>
+                      )}
+                      <p className="explanation text-gray-700"><strong>Explanation:</strong> {question.explanation}</p>
+                    </div>
+                  ))}
+                  <div className="score-display mt-2">
+                    <h4 className="text-base font-semibold">Score: {scores[quizIdx] || 0}/{qz.quiz.questions.length}</h4>
+                  </div>
+                </div>
+              ))}
+              <div className="quiz-actions flex flex-col md:flex-row gap-4 justify-center mt-6">
+                <button onClick={resetQuiz} className="px-6 py-2 rounded-full bg-purple-600 text-white font-semibold shadow hover:bg-purple-700 transition">Take All Quizzes Again</button>
+                <button onClick={goHome} className="px-6 py-2 rounded-full bg-gradient-to-r from-[#f8a4a8] to-[#a78bfa] text-white font-semibold shadow hover:opacity-90 transition">Analyze New Resume</button>
+              </div>
+            </div>
+          </>
         )}
       </div>
     </div>

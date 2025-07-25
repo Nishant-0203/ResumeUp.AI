@@ -53,12 +53,16 @@ export function Navbar() {
             </nav>
 
             <div className="hidden md:flex">
-              <Button variant="ghost" className="mr-4 text-gray-700 hover:text-[#a78bfa] hover:bg-transparent">
-                Sign In
-              </Button>
-              <Button className="rounded-full px-6 bg-gradient-to-r from-[#f8a4a8] to-[#a78bfa] hover:opacity-90 transition-all shadow-md hover:shadow-lg border border-white/20 backdrop-blur-sm">
-                Get Started
-              </Button>
+              <Link to="/user/signin">
+                <Button variant="ghost" className="mr-4 text-gray-700 hover:text-[#a78bfa] hover:bg-transparent">
+                  Sign In
+                </Button>
+              </Link>
+              <Link to="/user/signup">
+                <Button className="rounded-full px-6 bg-gradient-to-r from-[#f8a4a8] to-[#a78bfa] hover:opacity-90 transition-all shadow-md hover:shadow-lg border border-white/20 backdrop-blur-sm">
+                  Get Started
+                </Button>
+              </Link>
             </div>
 
             <div className="md:hidden">
@@ -98,19 +102,21 @@ export function Navbar() {
                 About
               </Link>
               <div className="pt-8 flex flex-col space-y-4">
-                <Button
-                  variant="outline"
-                  className="rounded-full px-8 py-6 text-lg bg-transparent"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Sign In
-                </Button>
-                <Button
-                  className="rounded-full px-8 py-6 text-lg bg-gradient-to-r from-[#f8a4a8] to-[#a78bfa]"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Get Started
-                </Button>
+                <Link to="/user/signin" onClick={() => setIsMobileMenuOpen(false)}>
+                  <Button
+                    variant="outline"
+                    className="rounded-full px-8 py-6 text-lg bg-transparent"
+                  >
+                    Sign In
+                  </Button>
+                </Link>
+                <Link to="/user/signup" onClick={() => setIsMobileMenuOpen(false)}>
+                  <Button
+                    className="rounded-full px-8 py-6 text-lg bg-gradient-to-r from-[#f8a4a8] to-[#a78bfa]"
+                  >
+                    Get Started
+                  </Button>
+                </Link>
               </div>
             </nav>
           </motion.div>
