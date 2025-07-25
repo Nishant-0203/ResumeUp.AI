@@ -8,7 +8,7 @@ import Analysis from './pages/analysis';
 import Quiz from './pages/quiz';
 import Signup from './pages/user/signup';
 import Signin from './pages/user/signin';
-import Dashboard from './pages/user/dashboard';
+import DashboardPage from './pages/user/dashboard';
 import ProtectedRoute from './pages/user/ProtectedRoute';
 import GoogleCallback from './pages/user/google-callback';
 
@@ -25,7 +25,7 @@ const App = () => {
         <Route path="/user/signin" element={<Signin />} />
         <Route path="/user/dashboard" element={
           <ProtectedRoute>
-            <Dashboard />
+            <DashboardPage />
           </ProtectedRoute>
         } />
         <Route path="/user/google-callback" element={<GoogleCallback />} />
