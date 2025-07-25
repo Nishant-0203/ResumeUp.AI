@@ -11,6 +11,7 @@ import { FaqAccordion } from "../section/FaqAccordion";
 import { AnimatedGradientBackground } from "../section/AnimatedGradientBackground";
 import { ResumeAnimation } from "../section/ResumeAnimation";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 export default function Home() {
   const fadeInUp = {
@@ -21,6 +22,8 @@ export default function Home() {
       transition: { duration: 0.6 },
     },
   };
+
+  const navigate = useNavigate();
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-white to-gray-50">
@@ -64,6 +67,7 @@ export default function Home() {
             <Button
               size="lg"
               className="rounded-full px-8 py-6 text-lg font-medium bg-gradient-to-r from-[#f8a4a8] to-[#a78bfa] hover:opacity-90 transition-all shadow-lg hover:shadow-xl hover:shadow-purple-200/30 border border-white/20 backdrop-blur-sm"
+              onClick={() => navigate('/analysis')}
             >
               Start My Analysis <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
