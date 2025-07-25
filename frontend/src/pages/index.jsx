@@ -2,14 +2,14 @@
 
 import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle, FileSearch, Brain, Building } from "lucide-react";
-import { HowItWorks } from "../section/HowItWorks";
-import { FeatureCard } from "../section/FeatureCard";
-import { LiveInsightsPreview } from "../section/LiveInsightsPreview";
-import { Testimonials } from "../section/Testimonials";
-import { PricingSection } from "../section/PricingSection";
-import { FaqAccordion } from "../section/FaqAccordion";
-import { AnimatedGradientBackground } from "../section/AnimatedGradientBackground";
-import { ResumeAnimation } from "../section/ResumeAnimation";
+import { HowItWorks } from "@/components/section/HowItWorks";
+import { FeatureCard } from "@/components/section/FeatureCard";
+import { LiveInsightsPreview } from "@/components/section/LiveInsightsPreview";
+import { Testimonials } from "@/components/section/Testimonials";
+import { PricingSection } from "@/components/section/PricingSection";
+import { FaqAccordion } from "@/components/section/FaqAccordion";
+import { AnimatedGradientBackground } from "@/components/section/AnimatedGradientBackground";
+import { ResumeAnimation } from "@/components/section/ResumeAnimation";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 

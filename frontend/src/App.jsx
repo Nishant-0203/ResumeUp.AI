@@ -3,14 +3,14 @@ import { Routes, Route } from 'react-router-dom';
 import React from 'react';
 import { Navbar } from './components/layout/navbar';
 import { Footer } from './components/layout/footer';
-import Home from './components/pages/index';
-import Analysis from './components/pages/analysis';
-import Quiz from './components/pages/quiz';
-import Signup from './components/pages/user/signup';
-import Signin from './components/pages/user/signin';
-import Dashboard from './components/pages/user/dashboard';
-import ProtectedRoute from './components/pages/user/ProtectedRoute';
-import GoogleCallback from './components/pages/user/google-callback';
+import Home from './pages';
+import Analysis from './pages/analysis';
+import Quiz from './pages/quiz';
+import Signup from './pages/user/signup';
+import Signin from './pages/user/signin';
+import Dashboard from './pages/user/dashboard';
+import ProtectedRoute from './pages/user/ProtectedRoute';
+import GoogleCallback from './pages/user/google-callback';
 
 
 const App = () => {

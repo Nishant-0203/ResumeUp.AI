@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { AnimatedGradientBackground } from '../section/AnimatedGradientBackground';
+import { AnimatedGradientBackground } from '@/components/section/AnimatedGradientBackground';
 
 const Analysis = () => {
   const [resumeFile, setResumeFile] = useState(null);
