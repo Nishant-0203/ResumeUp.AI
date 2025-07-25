@@ -49,6 +49,7 @@ passport.use(new GoogleStrategy({
   try {
     let user = await User.findOne({ email: profile.emails[0].value });
     if (!user) {
+      console.log('[server.js][if] Google user not found, creating new user');
       user = await User.create({
         name: profile.displayName,
         email: profile.emails[0].value,
@@ -57,6 +58,7 @@ passport.use(new GoogleStrategy({
     }
     return done(null, user);
   } catch (err) {
+    console.log('[server.js][else] Error in GoogleStrategy callback');
     return done(err, null);
   }
 }));
@@ -69,6 +71,7 @@ passport.deserializeUser(async (id, done) => {
     const user = await User.findById(id);
     done(null, user);
   } catch (err) {
+    console.log('[server.js][else] Error in deserializeUser');
     done(err, null);
   }
 });

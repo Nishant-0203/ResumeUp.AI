@@ -21,6 +21,7 @@ async function extractTextFromPDF(filePath) {
 // Analyze resume using Gemini AI and get JSON
 async function analyzeResume(resumeText, jobDescription = null) {
   if (!resumeText) {
+    console.log('[analysisController.js][if] ❌ No resumeText provided');
     throw new Error('Resume text is required for analysis');
   }
   try {
@@ -39,6 +40,7 @@ async function analyzeResume(resumeText, jobDescription = null) {
     ${resumeText}
     `;
     if (jobDescription && jobDescription.trim()) {
+      console.log('[analysisController.js][if] ✅ jobDescription provided');
       basePrompt += `
       Additionally, compare this resume to the following job description:
       Job Description:
@@ -54,8 +56,10 @@ async function analyzeResume(resumeText, jobDescription = null) {
     try {
       const match = text.match(/\{[\s\S]*\}/);
       if (match) {
+        console.log('[analysisController.js][if] ✅ JSON found in Gemini response');
         json = JSON.parse(match[0]);
       } else {
+        console.log('[analysisController.js][else] ❌ No JSON found in Gemini response');
         throw new Error('No JSON found in Gemini response');
       }
     } catch (err) {
@@ -73,12 +77,14 @@ async function analyzeResume(resumeText, jobDescription = null) {
 async function analyzeResumeHandler(req, res) {
   try {
     if (!req.file) {
+      console.log('[analysisController.js][if] ❌ No resume file uploaded');
       return res.status(400).json({ error: 'No resume file uploaded' });
     }
     const filePath = req.file.path;
     const jobDescription = req.body.jobDescription || '';
     const resumeText = await extractTextFromPDF(filePath);
     if (!resumeText.trim()) {
+      console.log('[analysisController.js][if] ❌ Could not extract text from PDF');
       return res.status(400).json({ error: 'Could not extract text from the PDF. Please ensure the PDF contains readable text.' });
     }
     const analysisResult = await analyzeResume(resumeText, jobDescription);
@@ -99,9 +105,11 @@ async function analyzeResumeHandler(req, res) {
       structuredData: analysisResult.json,
       success: true
     });
+    console.log('[analysisController.js][success] ✅ Resume analyzed and saved');
   } catch (error) {
     console.error('Error in analyze-resume route:', error);
     if (req.file) {
+      console.log('[analysisController.js][if] ❌ Cleaning up uploaded file after error');
       fs.unlink(req.file.path, (err) => {
         if (err) console.error('Error deleting file:', err);
       });
@@ -115,16 +123,19 @@ async function getAnalysisById(req, res) {
   try {
     const { analysisId } = req.params;
     if (!require('mongoose').Types.ObjectId.isValid(analysisId)) {
+      console.log('[analysisController.js][if] ❌ Invalid analysis ID format');
       return res.status(400).json({ error: 'Invalid analysis ID format' });
     }
     const analysis = await Analysis.findById(analysisId);
     if (!analysis) {
+      console.log('[analysisController.js][if] ❌ Analysis not found');
       return res.status(404).json({ error: 'Analysis not found' });
     }
     res.json({
       analysis: analysis,
       success: true
     });
+    console.log('[analysisController.js][success] ✅ Analysis fetched by ID');
   } catch (error) {
     console.error('Error fetching analysis:', error);
     res.status(500).json({ error: error.message || 'Failed to fetch analysis' });
@@ -139,6 +150,7 @@ async function getAllAnalyses(req, res) {
       analyses: analyses,
       success: true
     });
+    console.log('[analysisController.js][success] ✅ All analyses fetched');
   } catch (error) {
     console.error('Error fetching analyses:', error);
     res.status(500).json({ error: error.message || 'Failed to fetch analyses' });

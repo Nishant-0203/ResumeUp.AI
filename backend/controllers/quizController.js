@@ -31,14 +31,18 @@ async function generateQuizForWeakness(weakness) {
     const responseText = response.text();
     const jsonMatch = responseText.match(/\{[\s\S]*\}/);
     if (jsonMatch) {
+      console.log('[quizController.js][if] ✅ Quiz JSON found');
       const parsedQuiz = JSON.parse(jsonMatch[0]);
       if (parsedQuiz.questions && parsedQuiz.questions.length > 0) {
+        console.log('[quizController.js][if] ✅ Quiz questions found');
         parsedQuiz.questions = parsedQuiz.questions.slice(0, 5);
         return parsedQuiz;
       } else {
+        console.log('[quizController.js][else] ❌ No questions generated');
         throw new Error('No questions generated');
       }
     } else {
+      console.log('[quizController.js][else] ❌ Failed to parse quiz JSON');
       throw new Error('Failed to parse quiz JSON');
     }
   } catch (error) {
@@ -52,14 +56,17 @@ async function generateQuizHandler(req, res) {
   try {
     const { analysisId } = req.params;
     if (!require('mongoose').Types.ObjectId.isValid(analysisId)) {
+      console.log('[quizController.js][if] ❌ Invalid analysis ID format');
       return res.status(400).json({ error: 'Invalid analysis ID format' });
     }
     const analysis = await Analysis.findById(analysisId);
     if (!analysis) {
+      console.log('[quizController.js][if] ❌ Analysis not found');
       return res.status(404).json({ error: 'Analysis not found. Please analyze a resume first.' });
     }
     const weaknesses = analysis.analysisStructured?.weaknesses || [];
     if (weaknesses.length === 0) {
+      console.log('[quizController.js][if] ❌ No weaknesses found in the analysis');
       return res.status(400).json({ error: 'No weaknesses found in the analysis.' });
     }
     // Generate a quiz for each weakness
@@ -75,6 +82,7 @@ async function generateQuizHandler(req, res) {
       },
       success: true
     });
+    console.log('[quizController.js][success] ✅ Quizzes generated for weaknesses');
   } catch (error) {
     console.error('Error generating quizzes:', error);
     res.status(500).json({ error: error.message || 'Failed to generate quizzes' });
