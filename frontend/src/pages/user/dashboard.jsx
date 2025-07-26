@@ -11,7 +11,7 @@ import { AnimatedGradientBackground } from "@/components/section/AnimatedGradien
 
 export default function DashboardPage() {
   const sectionVariants = {
-    hidden: { opacity: 0, y: 50 },
+    hidden: { opacity: 0, y: 50 }, 
     visible: {
       opacity: 1,
       y: 0,
