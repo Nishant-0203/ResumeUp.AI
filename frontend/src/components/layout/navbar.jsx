@@ -41,6 +41,9 @@ export function Navbar() {
               <Link to="#features" className="text-gray-700 hover:text-[#a78bfa] transition-colors font-medium">
                 Features
               </Link>
+              <Link to="/contact" className="text-gray-700 hover:text-[#a78bfa] transition-colors font-medium">
+                Contact
+              </Link>
               <Link to="#how-it-works" className="text-gray-700 hover:text-[#a78bfa] transition-colors font-medium">
                 How It Works
               </Link>
