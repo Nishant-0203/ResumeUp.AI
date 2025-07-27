@@ -17,6 +17,7 @@ const analysisRoutes = require('./routes/analysisRoutes');
 const quizRoutes = require('./routes/quizRoutes');
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
+const contactRoutes = require('./routes/contactRoutes');
 
 // Middleware
 const errorHandler = require('./middleware/errorHandler');
@@ -91,6 +92,7 @@ app.use('/api', analysisRoutes);
 app.use('/api', quizRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
+app.use('/api/contact', contactRoutes);
 
 // Health check route
 app.get('/api/health', (req, res) => {
