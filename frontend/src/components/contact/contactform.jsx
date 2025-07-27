@@ -16,16 +16,33 @@ export function ContactForm() {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-
-    // Simulate form submission
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-
+    setSuccessMessage("");
+    setErrorMessage("");
+    try {
+      const response = await fetch("http://localhost:5000/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setSuccessMessage(data.message || "Message sent successfully!");
+        setFormData({ name: "", email: "", subject: "", message: "" });
+      } else {
+        setErrorMessage(data.error || "Failed to send message.");
+      }
+    } catch (error) {
+      setErrorMessage("An error occurred. Please try again later.");
+    }
     setIsSubmitting(false);
-    // Reset form or show success message
   };
 
   const handleChange = (field, value) => {
@@ -73,6 +90,13 @@ export function ContactForm() {
           />
           <label className="absolute -top-2 left-3 bg-white px-2 text-sm text-gray-600">Message</label>
         </div>
+
+        {successMessage && (
+          <div className="mb-4 text-green-600 font-semibold text-center">{successMessage}</div>
+        )}
+        {errorMessage && (
+          <div className="mb-4 text-red-600 font-semibold text-center">{errorMessage}</div>
+        )}
 
         <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
           <Button
