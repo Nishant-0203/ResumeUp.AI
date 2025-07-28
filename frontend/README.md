@@ -1,116 +1,96 @@
-AI Resume Analyzer - MERN Stack
-A full-stack web application that analyzes resumes using Google Gemini AI and provides detailed feedback on candidate profiles.
+# ResumeUp.AI
 
-Features
-Upload PDF resumes
-Optional job description matching
-AI-powered analysis using Google Gemini
-Professional feedback on strengths and weaknesses
-Skill recommendations and course suggestions
-Modern, responsive UI
-Tech Stack
-Frontend:
+**ResumeUp.AI** is a full-stack MERN web application that leverages Google Gemini AI to analyze resumes and provide personalized feedback, skill improvement suggestions, and interactive quizzes based on detected weaknesses. The platform helps job seekers understand their strengths and areas for growth, making them more competitive in the job market.
 
-React.js
-Axios for API calls
-CSS3 with modern styling
-Backend:
+## Features
+- Upload your PDF resume for instant AI-powered analysis
+- Optional job description matching for tailored feedback
+- Detailed strengths, weaknesses, and skill recommendations
+- Course suggestions to improve your profile
+- Interactive quizzes generated from your weaknesses to help you improve
+- Modern, responsive UI for a seamless experience
 
-Node.js
-Express.js
-Multer for file uploads
-PDF-parse for text extraction
-Google Generative AI (Gemini)
-Project Structure
-resume-analyzer/
-├── backend/
-│   ├── server.js
-│   ├── package.json
-│   ├── .env
-│   └── uploads/ (created automatically)
-└── frontend/
-    ├── src/
-    │   ├── App.js
-    │   ├── App.css
-    │   └── index.js
-    ├── package.json
-    └── public/
-Setup Instructions
-Prerequisites
-Node.js (v14 or higher)
-npm or yarn
-Google Gemini API key
-Backend Setup
-Create a new directory for the backend:
-bash
-mkdir resume-analyzer-backend
-cd resume-analyzer-backend
-Initialize npm and install dependencies:
-bash
-npm init -y
-npm install express multer cors dotenv pdf-parse @google/generative-ai
-npm install -D nodemon
-Create the server.js file with the backend code provided
-Create a .env file:
-bash
+## Tech Stack
+- **Frontend:** React.js, Axios, Tailwind CSS
+- **Backend:** Node.js, Express.js, Multer, PDF-parse, Google Generative AI (Gemini), MongoDB (via Mongoose)
+
+---
+
+## Getting Started: Run Locally
+
+### Prerequisites
+- Node.js (v14 or higher)
+- npm (comes with Node.js)
+- A Google Gemini API key ([Get one here](https://aistudio.google.com/app/apikey))
+- MongoDB instance (local or cloud, e.g., MongoDB Atlas)
+
+### 1. Clone the Repository
+```bash
+git clone https://github.com/your-username/ResumeUp.AI.git
+cd ResumeUp.AI
+```
+
+### 2. Backend Setup
+```bash
+cd backend
+npm install
+```
+
+Create a `.env` file in the `backend` folder with the following:
+```
 GOOGLE_API_KEY=your_google_gemini_api_key_here
+MONGODB_URI=your_mongodb_connection_string
 PORT=5000
 NODE_ENV=development
-Update package.json scripts:
-json
-"scripts": {
-  "start": "node server.js",
-  "dev": "nodemon server.js"
-}
+```
+
 Start the backend server:
-bash
+```bash
 npm run dev
-Frontend Setup
-Create a new React app:
-bash
-npx create-react-app resume-analyzer-frontend
-cd resume-analyzer-frontend
-Install additional dependencies:
-bash
-npm install axios
-Replace the contents of src/App.js with the React component code provided
-Replace the contents of src/App.css with the CSS code provided
-Add proxy to package.json (for development):
-json
-"proxy": "http://localhost:5000"
-Start the frontend:
-bash
+# or
 npm start
-Getting Google Gemini API Key
-Go to Google AI Studio
-Sign in with your Google account
-Create a new API key
-Copy the API key and add it to your .env file
-Usage
-Start both backend and frontend servers
-Open http://localhost:3000 in your browser
-Upload a PDF resume
-Optionally enter a job description
-Click "Analyze Resume" to get AI-powered feedback
-API Endpoints
-POST /api/analyze-resume - Analyze uploaded resume
-GET /api/health - Health check endpoint
-Error Handling
-File type validation (PDF only)
-File size limits (10MB max)
-AI API error handling
-User-friendly error messages
-Contributing
-Fork the repository
-Create a feature branch
-Make your changes
-Submit a pull request
-License
+```
+
+### 3. Frontend Setup
+Open a new terminal, then:
+```bash
+cd frontend
+npm install
+```
+
+Start the frontend development server:
+```bash
+npm start
+```
+
+The frontend will run on [http://localhost:3000](http://localhost:3000) and proxy API requests to the backend.
+
+---
+
+## Usage
+1. Open [http://localhost:3000](http://localhost:3000) in your browser.
+2. Sign up or sign in (if authentication is enabled).
+3. Upload your PDF resume (and optionally paste a job description).
+4. Click **Analyze Resume** to get instant AI-powered feedback.
+5. Review your strengths, weaknesses, and recommendations.
+6. Click **Start Quiz** to take personalized quizzes based on your weaknesses.
+7. Review your quiz results and category-wise scores.
+
+---
+
+## Troubleshooting
+- Ensure your Google Gemini API key and MongoDB URI are correct in the `.env` file.
+- The backend must be running before starting the frontend.
+- For any issues, check the browser console and backend terminal for error messages.
+
+---
+
+## License
 MIT License
 
-Author
-Developed by Sujoy Dutta
+---
 
-Support
-For support, please open an issue in the repository or contact the developer.
+**Developed by Sujoy Dutta**
+
+For support, open an issue or contact the developer on [LinkedIn](https://www.linkedin.com/in/dutta-sujoy/).
 
