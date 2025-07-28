@@ -23,6 +23,14 @@ async function generateQuizForWeakness(weakness) {
         }
       ]
     }
+    For the category field, use one of these specific categories:
+    - "Technical Skills" (for programming, software, technical knowledge)
+    - "Experience" (for work experience, professional background)
+    - "Education" (for academic background, training, certifications)
+    - "Presentation" (for communication, soft skills, presentation skills)
+    - "Leadership" (for management, team leadership, project management)
+    - "Problem Solving" (for analytical thinking, critical thinking)
+    
     Make sure the questions are practical and relevant to improving the identified weakness.
     Ensure you provide exactly 5 questions and that the JSON is valid.
     `;

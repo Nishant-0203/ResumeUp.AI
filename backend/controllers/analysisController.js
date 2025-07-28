@@ -89,6 +89,7 @@ async function analyzeResumeHandler(req, res) {
     }
     const analysisResult = await analyzeResume(resumeText, jobDescription);
     const analysisRecord = new Analysis({
+      user: req.user.id,
       resumeText,
       jobDescription,
       analysisRaw: analysisResult.raw,
@@ -145,12 +146,12 @@ async function getAnalysisById(req, res) {
 // Controller: Get all analyses
 async function getAllAnalyses(req, res) {
   try {
-    const analyses = await Analysis.find().sort({ createdAt: -1 }).limit(10);
+    const analyses = await Analysis.find({ user: req.user.id }).sort({ createdAt: -1 }).limit(10);
     res.json({
       analyses: analyses,
       success: true
     });
-    console.log('[analysisController.js][success] ✅ All analyses fetched');
+    console.log('[analysisController.js][success] ✅ All analyses fetched for user:', req.user.id);
   } catch (error) {
     console.error('Error fetching analyses:', error);
     res.status(500).json({ error: error.message || 'Failed to fetch analyses' });

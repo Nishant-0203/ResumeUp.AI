@@ -1,6 +1,7 @@
 const mongoose = require('../db/mongoose');
 
 const analysisSchema = new mongoose.Schema({
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   resumeText: String,
   jobDescription: String,
   analysisRaw: String,
