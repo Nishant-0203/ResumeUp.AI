@@ -2,13 +2,15 @@
 
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { Menu, X } from "lucide-react"
+import { Menu, X, User, LogOut } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Link } from "react-router-dom";
+import { useUser } from "@/contexts/UserContext";
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const { user, logout } = useUser();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -18,6 +20,11 @@ export function Navbar() {
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
+
+  const handleLogout = () => {
+    logout();
+    setIsMobileMenuOpen(false);
+  };
 
   return (
     <>
@@ -55,17 +62,38 @@ export function Navbar() {
               </Link>
             </nav>
 
-            <div className="hidden md:flex">
-              <Link to="/user/signin">
-                <Button variant="ghost" className="mr-4 text-gray-700 hover:text-[#a78bfa] hover:bg-transparent">
-                  Sign In
-                </Button>
-              </Link>
-              <Link to="/user/signup">
-                <Button className="rounded-full px-6 bg-gradient-to-r from-[#f8a4a8] to-[#a78bfa] hover:opacity-90 transition-all shadow-md hover:shadow-lg border border-white/20 backdrop-blur-sm">
-                  Get Started
-                </Button>
-              </Link>
+            <div className="hidden md:flex items-center">
+              {user ? (
+                <>
+                  <Link to="/user/dashboard">
+                    <Button variant="ghost" className="mr-4 text-gray-700 hover:text-[#a78bfa] hover:bg-transparent">
+                      <User className="h-4 w-4 mr-2" />
+                      Dashboard
+                    </Button>
+                  </Link>
+                  <Button 
+                    variant="ghost" 
+                    className="text-gray-700 hover:text-red-600 hover:bg-transparent"
+                    onClick={handleLogout}
+                  >
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Logout
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Link to="/user/signin">
+                    <Button variant="ghost" className="mr-4 text-gray-700 hover:text-[#a78bfa] hover:bg-transparent">
+                      Sign In
+                    </Button>
+                  </Link>
+                  <Link to="/user/signup">
+                    <Button className="rounded-full px-6 bg-gradient-to-r from-[#f8a4a8] to-[#a78bfa] hover:opacity-90 transition-all shadow-md hover:shadow-lg border border-white/20 backdrop-blur-sm">
+                      Get Started
+                    </Button>
+                  </Link>
+                </>
+              )}
             </div>
 
             <div className="md:hidden">
@@ -105,21 +133,45 @@ export function Navbar() {
                 About
               </Link>
               <div className="pt-8 flex flex-col space-y-4">
-                <Link to="/user/signin" onClick={() => setIsMobileMenuOpen(false)}>
-                  <Button
-                    variant="outline"
-                    className="rounded-full px-8 py-6 text-lg bg-transparent"
-                  >
-                    Sign In
-                  </Button>
-                </Link>
-                <Link to="/user/signup" onClick={() => setIsMobileMenuOpen(false)}>
-                  <Button
-                    className="rounded-full px-8 py-6 text-lg bg-gradient-to-r from-[#f8a4a8] to-[#a78bfa]"
-                  >
-                    Get Started
-                  </Button>
-                </Link>
+                {user ? (
+                  <>
+                    <Link to="/user/dashboard" onClick={() => setIsMobileMenuOpen(false)}>
+                      <Button
+                        variant="outline"
+                        className="rounded-full px-8 py-6 text-lg bg-transparent"
+                      >
+                        <User className="h-5 w-5 mr-2" />
+                        Dashboard
+                      </Button>
+                    </Link>
+                    <Button
+                      variant="outline"
+                      className="rounded-full px-8 py-6 text-lg bg-transparent text-red-600 hover:text-red-700"
+                      onClick={handleLogout}
+                    >
+                      <LogOut className="h-5 w-5 mr-2" />
+                      Logout
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Link to="/user/signin" onClick={() => setIsMobileMenuOpen(false)}>
+                      <Button
+                        variant="outline"
+                        className="rounded-full px-8 py-6 text-lg bg-transparent"
+                      >
+                        Sign In
+                      </Button>
+                    </Link>
+                    <Link to="/user/signup" onClick={() => setIsMobileMenuOpen(false)}>
+                      <Button
+                        className="rounded-full px-8 py-6 text-lg bg-gradient-to-r from-[#f8a4a8] to-[#a78bfa]"
+                      >
+                        Get Started
+                      </Button>
+                    </Link>
+                  </>
+                )}
               </div>
             </nav>
           </motion.div>

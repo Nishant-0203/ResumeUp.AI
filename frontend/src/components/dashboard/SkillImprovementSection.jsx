@@ -1,46 +1,71 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CheckCircle, ExternalLink } from "lucide-react";
+import { CheckCircle, ExternalLink, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
+import { useUser } from "@/contexts/UserContext";
+import { analysisService } from "@/services/analysisService";
 
 export function SkillImprovementSection() {
-  const [resources, setResources] = useState([
-    {
-      id: 1,
-      title: "Mastering TypeScript for React Developers",
-      type: "Course",
-      link: "#",
-      status: "pending",
-      weakSkill: "TypeScript",
-    },
-    {
-      id: 2,
-      title: "Introduction to Unit Testing with Jest & React Testing Library",
-      type: "Video Series",
-      link: "#",
-      status: "pending",
-      weakSkill: "Unit Testing",
-    },
-    {
-      id: 3,
-      title: "AWS Fundamentals for Developers",
-      type: "Article",
-      link: "#",
-      status: "pending",
-      weakSkill: "Cloud Deployment",
-    },
-    {
-      id: 4,
-      title: "CI/CD Pipelines with GitHub Actions",
-      type: "Tutorial",
-      link: "#",
-      status: "pending",
-      weakSkill: "CI/CD",
-    },
-  ]);
+  const { user } = useUser();
+  const [resources, setResources] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchAnalysisData = async () => {
+      if (!user) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        const response = await analysisService.getUserAnalyses();
+        if (response.success && response.analyses.length > 0) {
+          const latestAnalysis = response.analyses[0];
+          const analysis = latestAnalysis.analysisStructured || latestAnalysis.analysisJson || {};
+          const courseRecommendations = analysis.courseRecommendations || [];
+          const skillsToImprove = analysis.skillsToImprove || [];
+
+          // Create resources from course recommendations and skills to improve
+          const newResources = courseRecommendations.map((course, index) => ({
+            id: index + 1,
+            title: course,
+            type: "Course",
+            link: "#",
+            status: "pending",
+            weakSkill: skillsToImprove[index] || "Skill Improvement",
+          }));
+
+          // Add some default resources if no course recommendations
+          if (newResources.length === 0 && skillsToImprove.length > 0) {
+            skillsToImprove.forEach((skill, index) => {
+              newResources.push({
+                id: index + 1,
+                title: `Improve ${skill}`,
+                type: "Learning Path",
+                link: "#",
+                status: "pending",
+                weakSkill: skill,
+              });
+            });
+          }
+
+          setResources(newResources);
+        }
+      } catch (err) {
+        console.error('Error fetching analysis data:', err);
+        setError('Failed to load improvement recommendations');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAnalysisData();
+  }, [user]);
 
   const markAsDone = (id) => {
     setResources((prevResources) =>
@@ -49,6 +74,52 @@ export function SkillImprovementSection() {
       )
     );
   };
+
+  if (loading) {
+    return (
+      <Card className="bg-white/70 backdrop-blur-lg rounded-2xl p-6 border border-white/20 shadow-xl">
+        <CardHeader className="p-0 mb-6">
+          <CardTitle className="text-2xl font-bold">Skill Improvement</CardTitle>
+        </CardHeader>
+        <CardContent className="p-0 flex items-center justify-center py-8">
+          <div className="flex items-center gap-2 text-gray-600">
+            <Loader2 className="h-5 w-5 animate-spin" />
+            Loading recommendations...
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (error) {
+    return (
+      <Card className="bg-white/70 backdrop-blur-lg rounded-2xl p-6 border border-white/20 shadow-xl">
+        <CardHeader className="p-0 mb-6">
+          <CardTitle className="text-2xl font-bold">Skill Improvement</CardTitle>
+        </CardHeader>
+        <CardContent className="p-0">
+          <div className="text-center py-8 text-gray-600">
+            {error}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (resources.length === 0) {
+    return (
+      <Card className="bg-white/70 backdrop-blur-lg rounded-2xl p-6 border border-white/20 shadow-xl">
+        <CardHeader className="p-0 mb-6">
+          <CardTitle className="text-2xl font-bold">Skill Improvement</CardTitle>
+        </CardHeader>
+        <CardContent className="p-0">
+          <div className="text-center py-8 text-gray-600">
+            No improvement recommendations found. Upload a resume to get personalized recommendations!
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="bg-white/70 backdrop-blur-lg rounded-2xl p-6 border border-white/20 shadow-xl">

@@ -1,26 +1,86 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { analysisService } from '@/services/analysisService';
 
 // Helper to calculate category scores
 function calculateCategoryScores(quizzes, selectedAnswers) {
   const categoryTotals = {};
   const categoryCorrect = {};
+  
+  console.log('Calculating category scores for quizzes:', quizzes.length);
+  console.log('Selected answers:', selectedAnswers);
+  
   quizzes.forEach((qz, quizIdx) => {
+    console.log(`Processing quiz ${quizIdx} for weakness: ${qz.weakness}`);
     (qz.quiz.questions || []).forEach((question, qIdx) => {
       const cat = question.category || 'General';
+      console.log(`Question ${qIdx + 1} category: ${cat}`);
+      
       categoryTotals[cat] = (categoryTotals[cat] || 0) + 1;
       if (selectedAnswers[quizIdx]?.[qIdx] === question.correctAnswer) {
         categoryCorrect[cat] = (categoryCorrect[cat] || 0) + 1;
+        console.log(`Correct answer for category ${cat}`);
+      } else {
+        console.log(`Incorrect answer for category ${cat}`);
       }
     });
   });
+  
   const categories = Object.keys(categoryTotals);
   const scores = {};
   categories.forEach(cat => {
-    scores[cat] = Math.round((categoryCorrect[cat] || 0) / categoryTotals[cat] * 100);
+    const correct = categoryCorrect[cat] || 0;
+    const total = categoryTotals[cat] || 0;
+    scores[cat] = total > 0 ? Math.round((correct / total) * 100) : 0;
+    console.log(`Category ${cat}: ${correct}/${total} = ${scores[cat]}%`);
   });
+  
+  console.log('Final category scores:', scores);
   return scores;
+}
+
+// Helper to map AI-generated categories to display names
+function mapCategoryToDisplay(category) {
+  const categoryMap = {
+    'Technical Skills': 'Technical Skills',
+    'Technical': 'Technical Skills',
+    'Programming': 'Technical Skills',
+    'Coding': 'Technical Skills',
+    'Development': 'Technical Skills',
+    'Software': 'Technical Skills',
+    'Experience': 'Experience',
+    'Work Experience': 'Experience',
+    'Professional Experience': 'Experience',
+    'Employment': 'Experience',
+    'Education': 'Education',
+    'Academic': 'Education',
+    'Training': 'Education',
+    'Presentation': 'Presentation',
+    'Communication': 'Presentation',
+    'Soft Skills': 'Presentation',
+    'Leadership': 'Leadership',
+    'Management': 'Leadership',
+    'Project Management': 'Leadership',
+    'Problem Solving': 'Problem Solving',
+    'Analytical': 'Problem Solving',
+    'Critical Thinking': 'Problem Solving',
+    'General': 'General Skills'
+  };
+  
+  // Try exact match first
+  if (categoryMap[category]) {
+    return categoryMap[category];
+  }
+  
+  // Try partial matching
+  for (const [key, value] of Object.entries(categoryMap)) {
+    if (category.toLowerCase().includes(key.toLowerCase()) || key.toLowerCase().includes(category.toLowerCase())) {
+      return value;
+    }
+  }
+  
+  // If no match found, return the original category
+  return category;
 }
 
 const Quiz = () => {
@@ -53,9 +113,9 @@ const Quiz = () => {
     setError('');
     setShowResults(false);
     try {
-      const response = await axios.post(`http://localhost:5000/api/generate-quiz/${analysisId}`);
-      if (response.data.success && response.data.quizzes) {
-        setQuizzes(response.data.quizzes);
+      const response = await analysisService.generateQuiz(analysisId);
+      if (response.success && response.quizzes) {
+        setQuizzes(response.quizzes);
         setShowQuiz(true);
         setCurrentQuizIndex(0);
         setCurrentQuestion(0);
@@ -139,13 +199,13 @@ const Quiz = () => {
   // Fetch analysis data after quiz completion
   useEffect(() => {
     if (quizCompleted && analysisId) {
-      axios.get(`http://localhost:5000/api/analysis/${analysisId}`)
+      analysisService.getAnalysisById(analysisId)
         .then(res => {
-          if (res.data.success && res.data.analysis) {
-            setAnalysisData(res.data.analysis);
+          if (res.success && res.analysis) {
+            setAnalysisData(res.analysis);
             // Try to get resume name from analysis if available
-            if (res.data.analysis.resumeFileName) {
-              setResumeName(res.data.analysis.resumeFileName);
+            if (res.analysis.resumeFileName) {
+              setResumeName(res.analysis.resumeFileName);
             }
           }
         })
@@ -226,29 +286,45 @@ const Quiz = () => {
                 <div className="grid grid-cols-2 gap-4 mt-4">
                   {(() => {
                     const catScores = calculateCategoryScores(quizzes, selectedAnswers);
-                    // Map categories to display names
-                    const displayMap = {
-                      'Technical Skills': 'Technical Skills',
-                      'Experience': 'Experience',
-                      'Education': 'Education',
-                      'Presentation': 'Presentation',
-                    };
-                    // If no matching categories, show dummy values
-                    const keys = Object.keys(catScores).length > 0 ? Object.keys(displayMap) : [];
-                    if (keys.length === 0) {
+                    const categories = Object.keys(catScores);
+                    
+                    // Debug: Log the actual categories and scores
+                    console.log('Raw category scores:', catScores);
+                    console.log('Categories found:', categories);
+                    
+                    if (categories.length === 0) {
                       return (
-                        <>
-                          <div className="flex flex-col items-center"><span className="font-semibold">Technical Skills</span><span>85%</span></div>
-                          <div className="flex flex-col items-center"><span className="font-semibold">Experience</span><span>72%</span></div>
-                          <div className="flex flex-col items-center"><span className="font-semibold">Education</span><span>90%</span></div>
-                          <div className="flex flex-col items-center"><span className="font-semibold">Presentation</span><span>65%</span></div>
-                        </>
+                        <div className="col-span-2 text-center text-gray-500">
+                          No category scores available
+                        </div>
                       );
                     }
-                    return keys.map((cat, idx) => (
+                    
+                    // Group categories by their display names
+                    const groupedScores = {};
+                    categories.forEach(cat => {
+                      const displayName = mapCategoryToDisplay(cat);
+                      if (!groupedScores[displayName]) {
+                        groupedScores[displayName] = { total: 0, count: 0 };
+                      }
+                      groupedScores[displayName].total += catScores[cat];
+                      groupedScores[displayName].count += 1;
+                    });
+                    
+                    // Calculate average scores for each display category
+                    const finalScores = {};
+                    Object.keys(groupedScores).forEach(displayName => {
+                      finalScores[displayName] = Math.round(groupedScores[displayName].total / groupedScores[displayName].count);
+                    });
+                    
+                    console.log('Final grouped scores:', finalScores);
+                    
+                    const displayCategories = Object.keys(finalScores);
+                    
+                    return displayCategories.map((cat, idx) => (
                       <div key={cat} className="flex flex-col items-center">
-                        <span className="font-semibold">{displayMap[cat]}</span>
-                        <span>{catScores[cat] || 0}%</span>
+                        <span className="font-semibold text-sm">{cat}</span>
+                        <span className="text-lg font-bold text-purple-700">{finalScores[cat]}%</span>
                       </div>
                     ));
                   })()}

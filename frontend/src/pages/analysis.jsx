@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { AnimatedGradientBackground } from '@/components/section/AnimatedGradientBackground';
+import { analysisService } from '@/services/analysisService';
+import { useUser } from '@/contexts/UserContext';
 
 const Analysis = () => {
+  const { user } = useUser();
   const [resumeFile, setResumeFile] = useState(null);
   const [jobDescription, setJobDescription] = useState('');
   const [analysis, setAnalysis] = useState('');
@@ -28,10 +30,16 @@ const Analysis = () => {
   };
 
   const handleAnalyze = async () => {
+    if (!user) {
+      navigate('/user/signin');
+      return;
+    }
+    
     if (!resumeFile) {
       setError('Please upload a resume first');
       return;
     }
+    
     const formData = new FormData();
     formData.append('resume', resumeFile);
     formData.append('jobDescription', jobDescription);
@@ -39,16 +47,12 @@ const Analysis = () => {
     setError('');
     setAnalysis('');
     try {
-      const response = await axios.post('http://localhost:5000/api/analyze-resume', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      if (response.data.success) {
-        setAnalysis(response.data.analysis);
-        setAnalysisId(response.data.analysisId);
-        setStructuredData(response.data.structuredData);
-        console.log('Analysis stored with ID:', response.data.analysisId);
+      const response = await analysisService.analyzeResume(formData);
+      if (response.success) {
+        setAnalysis(response.analysis);
+        setAnalysisId(response.analysisId);
+        setStructuredData(response.structuredData);
+        console.log('Analysis stored with ID:', response.analysisId);
       } else {
         setError('Analysis completed but there was an issue saving the data.');
       }

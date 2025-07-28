@@ -1,12 +1,20 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useUser } from '@/contexts/UserContext';
 
 const Signin = () => {
   const [form, setForm] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { login, user } = useUser();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user) {
+      navigate('/user/dashboard');
+    }
+  }, [user, navigate]);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -22,12 +30,14 @@ const Signin = () => {
     }
     setLoading(true);
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/signin', form);
-      localStorage.setItem('token', res.data.token);
-      localStorage.setItem('user', JSON.stringify(res.data.user));
-      navigate('/user/dashboard');
+      const result = await login(form.email, form.password);
+      if (result.success) {
+        navigate('/user/dashboard');
+      } else {
+        setError(result.error || 'Signin failed.');
+      }
     } catch (err) {
-      setError(err.response?.data?.error || 'Signin failed.');
+      setError('Signin failed. Please try again.');
     } finally {
       setLoading(false);
     }
