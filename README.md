@@ -63,12 +63,12 @@ Start the frontend development server:
 npm start
 ```
 
-The frontend will run on [http://localhost:3000](http://localhost:3000) and proxy API requests to the backend.
+The frontend will run on [http://localhost:3000](http://localhost:5173) and proxy API requests to the backend.
 
 ---
 
 ## Usage
-1. Open [http://localhost:3000](http://localhost:3000) in your browser.
+1. Open [http://localhost:5173](http://localhost:5173) in your browser.
 2. Sign up or sign in (if authentication is enabled).
 3. Upload your PDF resume (and optionally paste a job description).
 4. Click **Analyze Resume** to get instant AI-powered feedback.
@@ -90,7 +90,7 @@ MIT License
 
 ---
 
-**Developed by Sujoy Dutta**
+**Developed by Nishant bhalla**
 
-For support, open an issue or contact the developer on [LinkedIn](https://www.linkedin.com/in/dutta-sujoy/).
+For support, open an issue or contact the developer on [LinkedIn].
 
