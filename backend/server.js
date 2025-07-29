@@ -1,26 +1,36 @@
 // server.js
-const express = require('express');
-const cors = require('cors');
-require('dotenv').config();
-const path = require('path');
-const session = require('express-session');
-const passport = require('passport');
-const GoogleStrategy = require('passport-google-oauth20').Strategy;
-const User = require('./models/User');
-const jwt = require('jsonwebtoken');
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import path from 'path';
+import session from 'express-session';
+import passport from 'passport';
+import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
+import jwt from 'jsonwebtoken';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+// Get __dirname equivalent for ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+dotenv.config();
 
 // DB connection
-require('./db/mongoose');
+import './db/mongoose.js';
+
+// Import User model
+import User from './models/User.js';
 
 // Routes
-const analysisRoutes = require('./routes/analysisRoutes');
-const quizRoutes = require('./routes/quizRoutes');
-const authRoutes = require('./routes/authRoutes');
-const userRoutes = require('./routes/userRoutes');
-const contactRoutes = require('./routes/contactRoutes');
+import analysisRoutes from './routes/analysisRoutes.js';
+import quizRoutes from './routes/quizRoutes.js';
+import authRoutes from './routes/authRoutes.js';
+import userRoutes from './routes/userRoutes.js';
+import contactRoutes from './routes/contactRoutes.js';
 
 // Middleware
-const errorHandler = require('./middleware/errorHandler');
+import errorHandler from './middleware/errorHandler.js';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -111,4 +121,4 @@ app.listen(PORT, () => {
   console.log(`Health check: http://localhost:${PORT}/api/health`);
 });
 
-module.exports = app;
+export default app;

@@ -1,4 +1,4 @@
-const multer = require('multer');
+import multer from 'multer';
 
 function errorHandler(error, req, res, next) {
   if (error instanceof multer.MulterError) {
@@ -11,4 +11,4 @@ function errorHandler(error, req, res, next) {
   res.status(500).json({ error: error.message || 'Something went wrong!' });
 }
 
-module.exports = errorHandler; 
+export default errorHandler; 

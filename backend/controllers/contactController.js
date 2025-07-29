@@ -1,7 +1,7 @@
-const Contact = require('../models/Contact');
+import Contact from '../models/Contact.js';
 
 // POST /api/contact
-exports.submitContactForm = async (req, res) => {
+const submitContactForm = async (req, res) => {
   try {
     const { name, email, subject, message } = req.body;
     console.log('Contact form data received:', { name, email, subject, message });
@@ -15,4 +15,6 @@ exports.submitContactForm = async (req, res) => {
     console.error('Contact form submission error:', error);
     res.status(500).json({ error: 'An error occurred while submitting the form.' });
   }
-}; 
+};
+
+export default { submitContactForm }; 

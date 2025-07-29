@@ -1,7 +1,13 @@
-const Analysis = require('../models/Analysis');
-const User = require('../models/User');
-const fs = require('fs');
-const path = require('path');
+import Analysis from '../models/Analysis.js';
+import User from '../models/User.js';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+// Get __dirname equivalent for ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 async function dashboard(req, res) {
   try {
@@ -55,4 +61,4 @@ async function uploadImage(req, res) {
   }
 }
 
-module.exports = { dashboard, uploadImage };
+export default { dashboard, uploadImage };

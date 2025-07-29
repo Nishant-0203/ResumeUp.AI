@@ -1,6 +1,9 @@
-const { GoogleGenerativeAI } = require('@google/generative-ai');
-const Analysis = require('../models/Analysis');
-require('dotenv').config();
+import { GoogleGenerativeAI } from '@google/generative-ai';
+import Analysis from '../models/Analysis.js';
+import dotenv from 'dotenv';
+import mongoose from 'mongoose';
+
+dotenv.config();
 
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 
@@ -63,7 +66,7 @@ async function generateQuizForWeakness(weakness) {
 async function generateQuizHandler(req, res) {
   try {
     const { analysisId } = req.params;
-    if (!require('mongoose').Types.ObjectId.isValid(analysisId)) {
+    if (!mongoose.Types.ObjectId.isValid(analysisId)) {
       console.log('[quizController.js][if] ❌ Invalid analysis ID format');
       return res.status(400).json({ error: 'Invalid analysis ID format' });
     }
@@ -97,6 +100,6 @@ async function generateQuizHandler(req, res) {
   }
 }
 
-module.exports = {
+export default {
   generateQuizHandler
 }; 
