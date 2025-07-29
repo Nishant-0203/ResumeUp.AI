@@ -74,6 +74,17 @@ export const UserProvider = ({ children }) => {
     delete axios.defaults.headers.common['Authorization'];
   };
 
+  const updateUserImage = (imagePath) => {
+    setUser(prevUser => ({
+      ...prevUser,
+      image: imagePath
+    }));
+    
+    // Update localStorage
+    const updatedUser = { ...user, image: imagePath };
+    localStorage.setItem('user', JSON.stringify(updatedUser));
+  };
+
   const checkAuth = async () => {
     if (!token) {
       setLoading(false);
@@ -116,6 +127,7 @@ export const UserProvider = ({ children }) => {
     login,
     signup,
     logout,
+    updateUserImage,
     token
   };
 

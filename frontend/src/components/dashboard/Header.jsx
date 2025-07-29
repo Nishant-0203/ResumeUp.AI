@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { User, Calendar, TrendingUp, Loader2 } from "lucide-react";
 import { useUser } from "@/contexts/UserContext";
 import { analysisService } from "@/services/analysisService";
+import { ImageUpload } from "./ImageUpload";
 
 export function DashboardHeader() {
-  const { user } = useUser();
+  const { user, updateUserImage } = useUser();
   const [analysisData, setAnalysisData] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -46,11 +46,6 @@ export function DashboardHeader() {
     );
   }
 
-  const getInitials = (name) => {
-    if (!name) return "U";
-    return name.split(' ').map(n => n[0]).join('').toUpperCase();
-  };
-
   const getResumeScore = () => {
     if (!analysisData) return "N/A";
     const analysis = analysisData.analysisStructured || analysisData.analysisJson || {};
@@ -66,10 +61,7 @@ export function DashboardHeader() {
     <Card className="bg-white/70 backdrop-blur-lg rounded-2xl p-6 border border-white/20 shadow-xl">
       <CardContent className="p-0 flex flex-col md:flex-row items-center md:justify-between gap-6">
         <div className="flex items-center gap-4">
-          <Avatar className="h-20 w-20 border-4 border-white shadow-md">
-            <AvatarImage src="/placeholder.svg?height=80&width=80" alt="User Profile" />
-            <AvatarFallback>{getInitials(user?.name || user?.email)}</AvatarFallback>
-          </Avatar>
+          <ImageUpload onImageUpdate={updateUserImage} />
           <div>
             <h2 className="text-3xl font-bold">Welcome, {user?.name || 'User'}!</h2>
             <p className="text-gray-600">{user?.email || 'user@example.com'}</p>
