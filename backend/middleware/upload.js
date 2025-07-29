@@ -32,4 +32,21 @@ const upload = multer({
   }
 });
 
-module.exports = upload; 
+// Image upload middleware
+const imageUpload = multer({
+  storage: storage,
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith('image/')) {
+      console.log('[upload.js][if] File is image');
+      cb(null, true);
+    } else {
+      console.log('[upload.js][else] File is not image');
+      cb(new Error('Only image files are allowed!'), false);
+    }
+  },
+  limits: {
+    fileSize: 5 * 1024 * 1024 // 5MB limit for images
+  }
+});
+
+module.exports = { upload, imageUpload };

@@ -24,8 +24,22 @@ async function signup(req, res) {
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = new User({ name, email, password: hashedPassword });
     await user.save();
+    
+    // Create token for immediate login
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+    
     console.log('[Signup] ✅ User registered successfully:', user.email);
-    res.status(201).json({ message: 'User registered successfully.' });
+    res.status(201).json({ 
+      message: 'User registered successfully.',
+      token,
+      user: { 
+        id: user._id, 
+        name: user.name, 
+        email: user.email, 
+        image: user.image,
+        createdAt: user.createdAt 
+      }
+    });
   } catch (error) {
     console.error('[Signup] Error:', error);
     // Return a more specific error if available
@@ -58,7 +72,16 @@ async function signin(req, res) {
     }
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
     console.log('[Signin] ✅ User signed in successfully:', email);
-    res.json({ token, user: { id: user._id, name: user.name, email: user.email } });
+    res.json({ 
+      token, 
+      user: { 
+        id: user._id, 
+        name: user.name, 
+        email: user.email, 
+        image: user.image,
+        createdAt: user.createdAt 
+      } 
+    });
   } catch (error) {
     console.error('[Signin] Error:', error);
     res.status(500).json({ error: 'Server error.' });

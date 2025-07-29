@@ -32,6 +32,9 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Serve uploaded images
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 // Session middleware (required for passport)
 app.use(session({
   secret: process.env.SESSION_SECRET || 'secret',
