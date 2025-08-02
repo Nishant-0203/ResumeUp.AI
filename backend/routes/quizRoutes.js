@@ -1,8 +1,7 @@
-import express from 'express';
-import quizController from '../controllers/quizController.js';
-
+const express = require('express');
 const router = express.Router();
+const quizController = require('../controllers/quizController');
 
 router.post('/generate-quiz/:analysisId', quizController.generateQuizHandler);
 
-export default router; 
+module.exports = router; 

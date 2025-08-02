@@ -1,54 +1,23 @@
-import fs from 'fs';
-import path from 'path';
-import { GoogleGenerativeAI } from '@google/generative-ai';
-import dotenv from 'dotenv';
-import mongoose from 'mongoose';
-import Analysis from '../models/Analysis.js';
+const fs = require('fs');
+const pdfParse = require('pdf-parse');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
+const Analysis = require('../models/Analysis');
+require('dotenv').config();
 
-dotenv.config();
+
 
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 
 // Extract text from PDF
 async function extractTextFromPDF(filePath) {
   try {
-    // Normalize the file path to handle different path separators
-    const normalizedPath = path.resolve(filePath);
-    console.log('[extractTextFromPDF] Attempting to read file at:', normalizedPath);
-    
-    // Check if file exists
-    if (!fs.existsSync(normalizedPath)) {
-      console.error('[extractTextFromPDF] ❌ File does not exist at path:', normalizedPath);
-      throw new Error(`File not found at path: ${normalizedPath}`);
-    }
-    
-    // Get file stats to verify it's a file
-    const stats = fs.statSync(normalizedPath);
-    if (!stats.isFile()) {
-      console.error('[extractTextFromPDF] ❌ Path is not a file:', normalizedPath);
-      throw new Error(`Path is not a file: ${normalizedPath}`);
-    }
-    
-    console.log('[extractTextFromPDF] ✅ File exists, reading content...');
-    const dataBuffer = fs.readFileSync(normalizedPath);
-    console.log('[extractTextFromPDF] ✅ File read successfully, size:', dataBuffer.length, 'bytes');
-    
-    const pdfParse = (await import('pdf-parse')).default;
+    const dataBuffer = fs.readFileSync(filePath);
+
     const data = await pdfParse(dataBuffer);
-    
-    if (!data.text || data.text.trim().length === 0) {
-      console.error('[extractTextFromPDF] ❌ No text extracted from PDF');
-      throw new Error('No text could be extracted from the PDF. Please ensure the PDF contains readable text.');
-    }
-    
-    console.log('[extractTextFromPDF] ✅ Text extracted successfully, length:', data.text.length);
     return data.text;
   } catch (error) {
-    console.error('[extractTextFromPDF] ❌ Error extracting text from PDF:', error);
-    if (error.code === 'ENOENT') {
-      throw new Error(`File not found: ${filePath}. Please ensure the file was uploaded correctly.`);
-    }
-    throw new Error(`Failed to extract text from PDF: ${error.message}`);
+    console.error('Error extracting text from PDF:', error);
+    throw new Error('Failed to extract text from PDF');
   }
 }
 
@@ -114,27 +83,13 @@ async function analyzeResumeHandler(req, res) {
       console.log('[analysisController.js][if] ❌ No resume file uploaded');
       return res.status(400).json({ error: 'No resume file uploaded' });
     }
-    
     const filePath = req.file.path;
-    console.log('[analysisController.js] 📁 File uploaded successfully:', {
-      originalName: req.file.originalname,
-      filename: req.file.filename,
-      path: filePath,
-      size: req.file.size,
-      mimetype: req.file.mimetype
-    });
-    
     const jobDescription = req.body.jobDescription || '';
-    console.log('[analysisController.js] 📝 Job description provided:', jobDescription ? 'Yes' : 'No');
-    
     const resumeText = await extractTextFromPDF(filePath);
     if (!resumeText.trim()) {
       console.log('[analysisController.js][if] ❌ Could not extract text from PDF');
       return res.status(400).json({ error: 'Could not extract text from the PDF. Please ensure the PDF contains readable text.' });
     }
-    
-    console.log('[analysisController.js] ✅ Text extracted successfully, length:', resumeText.length);
-    
     const analysisResult = await analyzeResume(resumeText, jobDescription);
     const analysisRecord = new Analysis({
       user: req.user.id,
@@ -145,16 +100,9 @@ async function analyzeResumeHandler(req, res) {
       analysisStructured: analysisResult.json // for backward compatibility
     });
     const savedAnalysis = await analysisRecord.save();
-    
-    // Clean up the uploaded file
     fs.unlink(filePath, (err) => {
-      if (err) {
-        console.error('[analysisController.js] ❌ Error deleting uploaded file:', err);
-      } else {
-        console.log('[analysisController.js] ✅ Uploaded file cleaned up successfully');
-      }
+      if (err) console.error('Error deleting file:', err);
     });
-    
     res.json({ 
       analysis: analysisResult.raw,
       analysisId: savedAnalysis._id,
@@ -163,33 +111,14 @@ async function analyzeResumeHandler(req, res) {
     });
     console.log('[analysisController.js][success] ✅ Resume analyzed and saved');
   } catch (error) {
-    console.error('[analysisController.js] ❌ Error in analyze-resume route:', error);
-    
-    // Clean up uploaded file if it exists
-    if (req.file && req.file.path) {
+    console.error('Error in analyze-resume route:', error);
+    if (req.file) {
       console.log('[analysisController.js][if] ❌ Cleaning up uploaded file after error');
       fs.unlink(req.file.path, (err) => {
-        if (err) {
-          console.error('[analysisController.js] ❌ Error deleting file during cleanup:', err);
-        } else {
-          console.log('[analysisController.js] ✅ File cleaned up after error');
-        }
+        if (err) console.error('Error deleting file:', err);
       });
     }
-    
-    // Provide more specific error messages
-    let errorMessage = 'Internal server error';
-    if (error.message.includes('File not found')) {
-      errorMessage = 'Uploaded file could not be processed. Please try uploading again.';
-    } else if (error.message.includes('No text could be extracted')) {
-      errorMessage = 'The PDF file does not contain readable text. Please ensure the PDF has selectable text content.';
-    } else if (error.message.includes('Failed to analyze resume')) {
-      errorMessage = 'Failed to analyze the resume. Please try again.';
-    } else {
-      errorMessage = error.message || 'Internal server error';
-    }
-    
-    res.status(500).json({ error: errorMessage });
+    res.status(500).json({ error: error.message || 'Internal server error' });
   }
 }
 
@@ -197,7 +126,7 @@ async function analyzeResumeHandler(req, res) {
 async function getAnalysisById(req, res) {
   try {
     const { analysisId } = req.params;
-    if (!mongoose.Types.ObjectId.isValid(analysisId)) {
+    if (!require('mongoose').Types.ObjectId.isValid(analysisId)) {
       console.log('[analysisController.js][if] ❌ Invalid analysis ID format');
       return res.status(400).json({ error: 'Invalid analysis ID format' });
     }
@@ -232,8 +161,8 @@ async function getAllAnalyses(req, res) {
   }
 }
 
-export default {
+module.exports = {
   analyzeResumeHandler,
   getAnalysisById,
   getAllAnalyses
-}; 
+};

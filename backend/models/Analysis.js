@@ -1,4 +1,4 @@
-import mongoose from '../db/mongoose.js';
+const mongoose = require('../db/mongoose');
 
 const analysisSchema = new mongoose.Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
@@ -24,4 +24,4 @@ const analysisSchema = new mongoose.Schema({
 
 const Analysis = mongoose.model('Analysis', analysisSchema);
 
-export default Analysis; 
+module.exports = Analysis; 

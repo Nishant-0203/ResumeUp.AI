@@ -1,36 +1,26 @@
 // server.js
-import express from 'express';
-import cors from 'cors';
-import dotenv from 'dotenv';
-import path from 'path';
-import session from 'express-session';
-import passport from 'passport';
-import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
-import jwt from 'jsonwebtoken';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-
-// Get __dirname equivalent for ES modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-dotenv.config();
+const express = require('express');
+const cors = require('cors');
+require('dotenv').config();
+const path = require('path');
+const session = require('express-session');
+const passport = require('passport');
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const User = require('./models/User');
+const jwt = require('jsonwebtoken');
 
 // DB connection
-import './db/mongoose.js';
-
-// Import User model
-import User from './models/User.js';
+require('./db/mongoose');
 
 // Routes
-import analysisRoutes from './routes/analysisRoutes.js';
-import quizRoutes from './routes/quizRoutes.js';
-import authRoutes from './routes/authRoutes.js';
-import userRoutes from './routes/userRoutes.js';
-import contactRoutes from './routes/contactRoutes.js';
+const analysisRoutes = require('./routes/analysisRoutes');
+const quizRoutes = require('./routes/quizRoutes');
+const authRoutes = require('./routes/authRoutes');
+const userRoutes = require('./routes/userRoutes');
+const contactRoutes = require('./routes/contactRoutes');
 
 // Middleware
-import errorHandler from './middleware/errorHandler.js';
+const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -115,10 +105,22 @@ app.get('/api/health', (req, res) => {
 // Error handling middleware
 app.use(errorHandler);
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-  console.log(`Health check: http://localhost:${PORT}/api/health`);
-});
+// Start server with error handling
+const startServer = (port) => {
+  app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+    console.log(`Health check: http://localhost:${port}/api/health`);
+  }).on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+      console.log(`Port ${port} is busy, trying port ${port + 1}...`);
+      startServer(port + 1);
+    } else {
+      console.error('Server error:', err);
+      process.exit(1);
+    }
+  });
+};
 
-export default app;
+startServer(PORT);
+
+module.exports = app;

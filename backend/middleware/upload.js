@@ -1,6 +1,6 @@
-import multer from 'multer';
-import fs from 'fs';
-import path from 'path';
+const multer = require('multer');
+const fs = require('fs');
+const path = require('path');
 
 // Get the absolute path to the uploads directory
 const uploadDir = path.join(process.cwd(), 'uploads');
@@ -69,4 +69,4 @@ const imageUpload = multer({
   }
 });
 
-export { upload, imageUpload };
+module.exports = { upload, imageUpload };
