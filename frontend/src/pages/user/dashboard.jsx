@@ -7,6 +7,7 @@ import { QuizSection } from "@/components/dashboard/QuizSection";
 import { ImprovementCard } from "@/components/dashboard/ImprovementCard";
 import { UploadResumeSection } from "@/components/dashboard/UploadResumeSection";
 import { AchievementsSection } from "@/components/dashboard/achievements";
+import JobRecommendations from "@/components/dashboard/JobRecommendations";
 import { AnimatedGradientBackground } from "@/components/section/AnimatedGradientBackground";
 
 export default function DashboardPage() {
@@ -45,6 +46,10 @@ export default function DashboardPage() {
 
           <motion.section variants={sectionVariants} className="mb-16">
             <ProgressTracker />
+          </motion.section>
+
+          <motion.section variants={sectionVariants} className="mb-16">
+            <JobRecommendations />
           </motion.section>
 
           <motion.section variants={sectionVariants} className="mb-16">

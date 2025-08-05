@@ -18,6 +18,7 @@ const quizRoutes = require('./routes/quizRoutes');
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const contactRoutes = require('./routes/contactRoutes');
+const jobRoutes = require('./routes/jobRoutes');
 
 // Middleware
 const errorHandler = require('./middleware/errorHandler');
@@ -96,6 +97,7 @@ app.use('/api', quizRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/contact', contactRoutes);
+app.use('/api/jobs', jobRoutes);
 
 // Health check route
 app.get('/api/health', (req, res) => {

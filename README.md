@@ -63,7 +63,7 @@ Start the frontend development server:
 npm start
 ```
 
-The frontend will run on [http://localhost:3000](http://localhost:5173) and proxy API requests to the backend.
+The frontend will run on [http://localhost:5173](http://localhost:5173) and proxy API requests to the backend.
 
 ---
 
