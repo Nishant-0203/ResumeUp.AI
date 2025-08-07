@@ -1,103 +1,62 @@
-const Job = require('../models/Job');
 const Analysis = require('../models/Analysis');
-const axios = require('axios');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 exports.getRecommendedJobs = async (req, res) => {
     try {
-        // Get the user's latest analysis
-        const latestAnalysis = await Analysis.findOne({ 
-            user: req.user._id 
-        }).sort({ createdAt: -1 });
+        const userId = req.user.id; // Assumes auth middleware sets req.user
+        const analysis = await Analysis.findOne({ user: userId }).sort({ createdAt: -1 });
 
-        if (!latestAnalysis) {
+        if (!analysis) {
             return res.status(404).json({ message: 'No resume analysis found' });
         }
 
-        // Extract skills from analysis
-        const userSkills = latestAnalysis.analysisJson?.skillsToImprove || [];
-        // Default to Entry Level if no clear experience level is found
-        const experienceLevel = 'Entry Level';
+        // Prepare prompt for Gemini
+        const prompt = `
+        Based on this resume analysis, suggest 5 suitable job roles. For each, provide:
+        - title
+        - company
+        - location
+        - workType
+        - salary
+        - compensationType
+        - requiredSkills (as an array)
+        - recommendations (short string)
+        - nextSteps (as an array)
+        Example output (as JSON array):
+        [
+          {
+            "title": "Software Engineer",
+            "company": "TechCorp",
+            "location": "Remote",
+            "workType": "Full-time",
+            "salary": "$100,000",
+            "compensationType": "Annual",
+            "requiredSkills": ["JavaScript", "React", "Node.js"],
+            "recommendations": "You are a great fit for this role due to your experience in web development.",
+            "nextSteps": ["Update your LinkedIn profile", "Apply on company website"]
+          }
+        ]
+        Resume analysis:
+        ${JSON.stringify(analysis, null, 2)}
+        `;
 
-        // Using RapidAPI Jobs API
-        const options = {
-            method: 'GET',
-            url: 'https://jsearch.p.rapidapi.com/search',
-            params: {
-                query: userSkills.join(' '),
-                page: '1',
-                num_pages: '1'
-            },
-            headers: {
-                'X-RapidAPI-Key': process.env.RAPID_API_KEY,
-                'X-RapidAPI-Host': 'jsearch.p.rapidapi.com'
-            }
-        };
+        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        const text = response.text();
 
-        const response = await axios.request(options);
-
-        // Transform and save jobs to our database
-        const jobs = response.data.data.map(job => ({
-            title: job.job_title,
-            company: job.employer_name,
-            location: job.job_city ? `${job.job_city}, ${job.job_country}` : 'Remote',
-            description: job.job_description,
-            linkedinUrl: job.job_apply_link,
-            skills: userSkills,
-            experienceLevel,
-            jobType: job.job_employment_type || 'Full-time',
-            salary: job.job_salary || 'Not specified',
-            postDate: job.job_posted_at_datetime || new Date()
-        }));
-
-        await Job.insertMany(jobs);
-
-        // Get recommended jobs from our database with advanced filtering
-        const recommendedJobs = await Job.find({
-            $and: [
-                { skills: { $in: userSkills } },
-                { experienceLevel: experienceLevel },
-                { 
-                    postDate: { 
-                        $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) // Last 30 days
-                    } 
-                }
-            ]
-        })
-        .sort({ postDate: -1 }) // Sort by post date
-        .limit(15);
-
-        res.json(recommendedJobs);
-    } catch (error) {
-        console.error('Error fetching jobs:', error);
-        
-        // Send more specific error messages
-        if (error.response) {
-            // The request was made and the server responded with a status code
-            // that falls out of the range of 2xx
-            res.status(error.response.status).json({
-                message: `API Error: ${error.response.data.message || 'Failed to fetch jobs'}`,
-                details: error.response.data
-            });
-        } else if (error.request) {
-            // The request was made but no response was received
-            res.status(503).json({
-                message: 'No response from jobs API. Please try again later.'
-            });
-        } else {
-            // Something happened in setting up the request that triggered an Error
-            res.status(500).json({
-                message: 'Error fetching job recommendations',
-                details: error.message
-            });
+        let jobs;
+        try {
+            jobs = JSON.parse(text);
+        } catch (e) {
+            // If not JSON, return the raw text for debugging
+            return res.status(500).json({ message: 'Failed to parse Gemini response', details: text });
         }
-    }
-};
 
-exports.getAllJobs = async (req, res) => {
-    try {
-        const jobs = await Job.find().sort({ createdAt: -1 });
-        res.json(jobs);
-    } catch (error) {
-        res.status(500).json({ message: 'Error fetching jobs' });
+        res.json({ jobs });
+    } catch (err) {
+        res.status(500).json({ message: err.message, details: err.stack });
     }
 };
