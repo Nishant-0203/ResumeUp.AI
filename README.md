@@ -170,7 +170,7 @@ graph TB
    FRONTEND_URL=http://localhost:5173
    
    # Database
-   MONGODB_URI=mongodb://localhost:27017/resumeup-ai
+   MONGODB_URI=your_link
    # OR for MongoDB Atlas:
    # MONGODB_URI=your_mongo_db_link
    
@@ -611,7 +611,7 @@ Content-Type: multipart/form-data
 
 2. **Get Connection String**
    ```
-   mongodb+srv://username:password@cluster.mongodb.net/resumeup-ai
+   mongodb+srv://username:password@cluster.mongodb.net
    ```
 
 ---
