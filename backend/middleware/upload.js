@@ -1,72 +1,69 @@
 const multer = require('multer');
-const fs = require('fs');
-const path = require('path');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const cloudinary = require('cloudinary').v2;
 
-// Get the absolute path to the uploads directory
-const uploadDir = path.join(process.cwd(), 'uploads');
+// Cloudinary config (auto-reads CLOUDINARY_URL from .env)
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME, // optional if CLOUDINARY_URL is set
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    // Ensure uploads directory exists
-    if (!fs.existsSync(uploadDir)) {
-      console.log('[upload.js][if] Upload directory does not exist, creating:', uploadDir);
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
-    console.log('[upload.js] ✅ Using upload directory:', uploadDir);
-    cb(null, uploadDir);
+// 📄 Resume (PDF) upload
+const pdfStorage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: 'resumes',        // Cloudinary folder
+    resource_type: 'raw',     // needed for pdf/docx
+    format: async () => 'pdf' // force pdf format
   },
-  filename: (req, file, cb) => {
-    const timestamp = Date.now();
-    const originalName = file.originalname.replace(/[^a-zA-Z0-9.-]/g, '_'); // Sanitize filename
-    const filename = `${timestamp}-${originalName}`;
-    console.log('[upload.js] 📁 Generated filename:', filename);
-    cb(null, filename);
-  }
 });
 
 const upload = multer({
-  storage: storage,
+  storage: pdfStorage,
   fileFilter: (req, file, cb) => {
     console.log('[upload.js] 📄 Processing file:', {
       originalname: file.originalname,
       mimetype: file.mimetype,
-      size: file.size
     });
-    
+
     if (file.mimetype === 'application/pdf') {
       console.log('[upload.js][if] ✅ File is PDF');
       cb(null, true);
     } else {
-      console.log('[upload.js][else] ❌ File is not PDF, mimetype:', file.mimetype);
+      console.log('[upload.js][else] ❌ File is not PDF');
       cb(new Error('Only PDF files are allowed!'), false);
     }
   },
-  limits: {
-    fileSize: 10 * 1024 * 1024 // 10MB limit
-  }
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
 });
 
-// Image upload middleware
+// 🖼️ Image upload
+const imageStorage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: 'images',
+    resource_type: 'image',
+  },
+});
+
 const imageUpload = multer({
-  storage: storage,
+  storage: imageStorage,
   fileFilter: (req, file, cb) => {
     console.log('[upload.js] 🖼️ Processing image file:', {
       originalname: file.originalname,
       mimetype: file.mimetype,
-      size: file.size
     });
-    
+
     if (file.mimetype.startsWith('image/')) {
       console.log('[upload.js][if] ✅ File is image');
       cb(null, true);
     } else {
-      console.log('[upload.js][else] ❌ File is not image, mimetype:', file.mimetype);
+      console.log('[upload.js][else] ❌ File is not image');
       cb(new Error('Only image files are allowed!'), false);
     }
   },
-  limits: {
-    fileSize: 5 * 1024 * 1024 // 5MB limit for images
-  }
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
 });
 
 module.exports = { upload, imageUpload };

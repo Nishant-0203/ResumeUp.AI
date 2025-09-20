@@ -8,6 +8,7 @@ function errorHandler(error, req, res, next) {
       return res.status(400).json({ error: 'File too large. Maximum size is 10MB.' });
     }
   }
+  console.log(error);
   res.status(500).json({ error: error.message || 'Something went wrong!' });
 }
 

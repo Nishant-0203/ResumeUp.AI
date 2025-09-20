@@ -9,9 +9,10 @@ require('dotenv').config();
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 
 // Extract text from PDF
-async function extractTextFromPDF(filePath) {
+async function extractTextFromPDF(fileUrl) {
   try {
-    const dataBuffer = fs.readFileSync(filePath);
+    const response = await axios.get(fileUrl, { responseType: 'arraybuffer' });
+    const dataBuffer = response.data;
 
     const data = await pdfParse(dataBuffer);
     return data.text;

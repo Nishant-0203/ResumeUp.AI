@@ -17,31 +17,25 @@ const JobRecommendations = () => {
             setLoading(true);
             setError(null);
             const data = await getRecommendedJobs();
+            
             if (!data) {
-                setJobs([]);
                 setError('No job data received');
                 return;
             }
+
             if (Array.isArray(data)) {
                 setJobs(data);
-            } else if (data.jobs && Array.isArray(data.jobs)) {
-                setJobs(data.jobs);
             } else if (data.message) {
-                setJobs([]);
-                // Show details if present (e.g., Gemini API error details)
-                setError(data.details ? `${data.message}: ${data.details}` : data.message);
+                // Handle specific error messages from the backend
+                setError(data.message);
             } else {
-                setJobs([]);
+                console.error('Invalid jobs data:', data);
                 setError('Received invalid job data format');
             }
         } catch (err) {
-            setJobs([]);
-            console.log('Full error object:', err); // <-- Add this line for debugging
-            // Show details if present (e.g., Gemini API error details)
+            console.error('Job fetch error:', err);
             if (err.message === 'No resume analysis found') {
                 setError('Please upload and analyze your resume first to get job recommendations');
-            } else if (err.details) {
-                setError(`${err.message}: ${err.details}`);
             } else {
                 setError(err.message || 'Failed to fetch job recommendations. Please try again.');
             }
@@ -53,23 +47,18 @@ const JobRecommendations = () => {
     if (loading) {
         return (
             <div className="p-4 border rounded-lg shadow-sm">
-                <h2 className="text-2xl font-bold mb-4 flex items-center justify-between">
-                    Recommended Jobs
-                    <Button onClick={fetchJobs} className="ml-2 bg-blue-500 hover:bg-blue-600 text-white" size="sm">Refresh</Button>
-                </h2>
+                <h2 className="text-2xl font-bold mb-4">Recommended Jobs</h2>
                 <div className="flex justify-center items-center h-32">
                     <div className="animate-pulse text-gray-600">Loading job recommendations...</div>
                 </div>
             </div>
         );
     }
+    
     if (error) {
         return (
             <div className="p-4 border rounded-lg shadow-sm">
-                <h2 className="text-2xl font-bold mb-4 flex items-center justify-between">
-                    Recommended Jobs
-                    <Button onClick={fetchJobs} className="ml-2 bg-blue-500 hover:bg-blue-600 text-white" size="sm">Refresh</Button>
-                </h2>
+                <h2 className="text-2xl font-bold mb-4">Recommended Jobs</h2>
                 <div className="p-4 bg-red-50 rounded-lg">
                     <div className="flex flex-col items-center text-center">
                         <p className="text-gray-800 mb-4">{error}</p>
@@ -80,34 +69,26 @@ const JobRecommendations = () => {
                             >
                                 Upload Resume
                             </Button>
-                        ) : null}
+                        ) : (
+                            <Button 
+                                onClick={fetchJobs}
+                                className="bg-blue-500 hover:bg-blue-600 text-white"
+                            >
+                                Try Again
+                            </Button>
+                        )}
                     </div>
                 </div>
             </div>
         );
     }
-    if (!jobs.length) {
-        return (
-            <div className="p-4 border rounded-lg shadow-sm">
-                <h2 className="text-2xl font-bold mb-4 flex items-center justify-between">
-                    Recommended Jobs
-                    <Button onClick={fetchJobs} className="ml-2 bg-blue-500 hover:bg-blue-600 text-white" size="sm">Refresh</Button>
-                </h2>
-                <div className="flex flex-col items-center text-center py-8">
-                    <p className="text-gray-700">No job recommendations available. Try analyzing your resume or refreshing.</p>
-                </div>
-            </div>
-        );
-    }
+
     return (
         <div className="space-y-4">
-            <h2 className="text-2xl font-bold mb-4 flex items-center justify-between">
-                Recommended Jobs
-                <Button onClick={fetchJobs} className="ml-2 bg-blue-500 hover:bg-blue-600 text-white" size="sm">Refresh</Button>
-            </h2>
+            <h2 className="text-2xl font-bold mb-4">Recommended Jobs</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {jobs.map((job, idx) => (
-                    <Card key={job._id || idx} className="p-6 hover:shadow-lg transition-shadow">
+                {jobs.map((job) => (
+                    <Card key={job._id} className="p-6 hover:shadow-lg transition-shadow">
                         <div className="flex flex-col space-y-3">
                             <div className="flex justify-between items-start">
                                 <div>
@@ -192,9 +173,9 @@ const JobRecommendations = () => {
                             <div className="pt-4">
                                 <Button
                                     className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg transition-colors"
-                                    onClick={() => window.open(`https://www.linkedin.com/jobs/search/?keywords=${encodeURIComponent(job.title + ' ' + job.company)}`, '_blank')}
+                                    onClick={() => window.open(`https://www.google.com/search?q=${job.company}+careers+${job.title}`, '_blank')}
                                 >
-                                    Search on LinkedIn
+                                    Learn More
                                 </Button>
                             </div>
                         </div>
@@ -206,4 +187,3 @@ const JobRecommendations = () => {
 };
 
 export default JobRecommendations;
-
