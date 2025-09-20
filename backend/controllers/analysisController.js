@@ -1,4 +1,5 @@
 const fs = require('fs');
+const axios = require('axios');
 const pdfParse = require('pdf-parse');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const Analysis = require('../models/Analysis');
@@ -79,12 +80,13 @@ async function analyzeResume(resumeText, jobDescription = null) {
 
 // Controller: Analyze Resume
 async function analyzeResumeHandler(req, res) {
+  let filePath = null;
   try {
     if (!req.file) {
       console.log('[analysisController.js][if] ❌ No resume file uploaded');
       return res.status(400).json({ error: 'No resume file uploaded' });
     }
-    const filePath = req.file.path;
+    filePath = req.file.path;
     const jobDescription = req.body.jobDescription || '';
     const resumeText = await extractTextFromPDF(filePath);
     if (!resumeText.trim()) {
@@ -101,9 +103,15 @@ async function analyzeResumeHandler(req, res) {
       analysisStructured: analysisResult.json // for backward compatibility
     });
     const savedAnalysis = await analysisRecord.save();
-    fs.unlink(filePath, (err) => {
-      if (err) console.error('Error deleting file:', err);
-    });
+    
+    // Clean up uploaded file
+    if (filePath && fs.existsSync(filePath)) {
+      fs.unlink(filePath, (err) => {
+        if (err) console.error('Error deleting file:', err);
+        else console.log('[analysisController.js] ✅ File cleaned up successfully');
+      });
+    }
+    
     res.json({ 
       analysis: analysisResult.raw,
       analysisId: savedAnalysis._id,
@@ -113,10 +121,12 @@ async function analyzeResumeHandler(req, res) {
     console.log('[analysisController.js][success] ✅ Resume analyzed and saved');
   } catch (error) {
     console.error('Error in analyze-resume route:', error);
-    if (req.file) {
-      console.log('[analysisController.js][if] ❌ Cleaning up uploaded file after error');
-      fs.unlink(req.file.path, (err) => {
-        if (err) console.error('Error deleting file:', err);
+    // Always cleanup uploaded file on error
+    if (filePath && fs.existsSync(filePath)) {
+      console.log('[analysisController.js][error] ❌ Cleaning up uploaded file after error');
+      fs.unlink(filePath, (err) => {
+        if (err) console.error('Error deleting file during cleanup:', err);
+        else console.log('[analysisController.js] ✅ File cleaned up after error');
       });
     }
     res.status(500).json({ error: error.message || 'Internal server error' });

@@ -9,6 +9,10 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const User = require('./models/User');
 const jwt = require('jsonwebtoken');
 
+// Validate environment variables
+const validateEnvironment = require('./config/validateEnv');
+validateEnvironment();
+
 // DB connection
 require('./db/mongoose');
 
@@ -22,6 +26,7 @@ const jobRoutes = require('./routes/jobRoutes');
 
 // Middleware
 const errorHandler = require('./middleware/errorHandler');
+const { generalLimiter, analysisLimiter, authLimiter } = require('./middleware/rateLimiter');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -33,14 +38,20 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Apply rate limiting
+app.use(generalLimiter);
+
 // Serve uploaded images
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Session middleware (required for passport)
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'secret',
+  secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
+  secure: process.env.NODE_ENV === 'production',
+  httpOnly: true,
+  maxAge: 24 * 60 * 60 * 1000 // 24 hours
 }));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -92,9 +103,9 @@ app.get('/api/auth/google/callback', passport.authenticate('google', { failureRe
 });
 
 // API Routes
-app.use('/api', analysisRoutes);
+app.use('/api', analysisLimiter, analysisRoutes);
 app.use('/api', quizRoutes);
-app.use('/api/auth', authRoutes);
+app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/jobs', jobRoutes);

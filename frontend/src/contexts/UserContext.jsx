@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 
 const UserContext = createContext();
@@ -16,6 +16,8 @@ export const UserProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState(localStorage.getItem('token'));
 
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+
   // Set up axios defaults
   useEffect(() => {
     if (token) {
@@ -27,7 +29,7 @@ export const UserProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/signin', {
+      const response = await axios.post(`${API_BASE_URL}/auth/signin`, {
         email,
         password
       });
@@ -49,7 +51,7 @@ export const UserProvider = ({ children }) => {
 
   const signup = async (userData) => {
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/signup', userData);
+      const response = await axios.post(`${API_BASE_URL}/auth/signup`, userData);
       
       if (response.data.token) {
         setToken(response.data.token);
@@ -106,7 +108,7 @@ export const UserProvider = ({ children }) => {
 
     // If no stored user data, try to verify token with server
     try {
-      const response = await axios.get('http://localhost:5000/api/user/dashboard');
+      const response = await axios.get(`${API_BASE_URL}/user/dashboard`);
       setUser(response.data.user);
       localStorage.setItem('user', JSON.stringify(response.data.user));
     } catch (error) {
@@ -121,7 +123,7 @@ export const UserProvider = ({ children }) => {
     checkAuth();
   }, [token]);
 
-  const value = {
+  const value = useMemo(() => ({
     user,
     loading,
     login,
@@ -129,7 +131,7 @@ export const UserProvider = ({ children }) => {
     logout,
     updateUserImage,
     token
-  };
+  }), [user, loading, token]);
 
   return (
     <UserContext.Provider value={value}>
