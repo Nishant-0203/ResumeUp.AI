@@ -172,7 +172,7 @@ graph TB
    # Database
    MONGODB_URI=mongodb://localhost:27017/resumeup-ai
    # OR for MongoDB Atlas:
-   # MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/resumeup-ai
+   # MONGODB_URI=your_mongo_db_link
    
    # AI Services
    GOOGLE_API_KEY=your_google_gemini_api_key_here
