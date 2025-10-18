@@ -1,288 +1,635 @@
-# 🚀 ResumeUp.AI
+# 🚀 ResumeUp.AI# 🚀 ResumeUp.AI
+
+
+
+<div align="center"><div align="center">
+
+
+
+[![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)[![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
+
+[![React](https://img.shields.io/badge/React-19+-blue.svg)](https://reactjs.org/)[![React](https://img.shields.io/badge/React-19+-blue.svg)](https://reactjs.org/)
+
+[![MongoDB](https://img.shields.io/badge/MongoDB-Latest-green.svg)](https://mongodb.com/)[![MongoDB](https://img.shields.io/badge/MongoDB-Latest-green.svg)](https://mongodb.com/)
+
+[![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)[![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
+
+
+
+**AI-Powered Resume Analysis & Career Growth Platform****AI-Powered Resume Analysis & Career Growth Platform**
+
+
+
+[🌟 Live Demo](https://resumeup-ai.vercel.app) | [🐛 Report Bug](https://github.com/Nishant-0203/ResumeUp.AI/issues)[🌟 Live Demo](https://resumeup-ai.vercel.app) | [🐛 Report Bug](https://github.com/Nishant-0203/ResumeUp.AI/issues)
+
+
+
+</div></div>
+
+
+
+------
+
+
+
+## 🎯 About## 🎯 About
+
+
+
+**ResumeUp.AI** transforms your career journey with AI-powered resume analysis, personalized job recommendations, and interactive quizzes. Built with the MERN stack and Google Gemini AI to help job seekers identify strengths, improve weaknesses, and accelerate professional growth.**ResumeUp.AI** transforms your career with AI-powered resume analysis, personalized job recommendations, and interactive quizzes. Built with the MERN stack and Google Gemini AI.
+
+
+
+## ✨ Key Features## ✨ Key Features
+
+
+
+- 🤖 **AI Resume Analysis** - PDF parsing with Google Gemini AI insights- 🤖 **AI Resume Analysis** - PDF parsing with Google Gemini AI insights
+
+- 🎯 **Job Recommendations** - Personalized suggestions with matching scores- 🎯 **Job Recommendations** - Personalized suggestions with matching scores
+
+- 📚 **Smart Quizzes** - Dynamic quizzes based on skill gaps- 📚 **Smart Quizzes** - Dynamic quizzes based on skill gaps
+
+- 📊 **Progress Tracking** - Visual dashboards and analytics- 📊 **Progress Tracking** - Visual dashboards and analytics
+
+- 🔐 **Secure Auth** - JWT + Google OAuth integration- 🔐 **Secure Auth** - JWT + Google OAuth integration
+
+- 📱 **Responsive Design** - Works seamlessly on all devices- 📱 **Responsive Design** - Works seamlessly on all devices
+
+
+
+## 🛠️ Tech Stack## 🛠️ Tech Stack
+
+
+
+**Frontend:** React 19 • Tailwind CSS • Framer Motion • Recharts • Vite**Frontend:** React 19 • Tailwind CSS • Framer Motion • Recharts • Vite
+
+
+
+**Backend:** Node.js • Express • MongoDB • Mongoose • Google Gemini AI • JWT • Cloudinary**Backend:** Node.js • Express • MongoDB • Mongoose • Google Gemini AI • JWT • Cloudinary------
+
+
+
+---
+
+
+
+## 🚀 Quick Start## 🚀 Quick Start
+
+
+
+### Prerequisites### Prerequisites
+
+
+
+- Node.js 18+- Node.js 18+
+
+- MongoDB (local or Atlas)- MongoDB (local or Atlas)
+
+- Google Gemini API Key ([Get it here](https://aistudio.google.com/app/apikey))- Google Gemini API Key ([Get it here](https://aistudio.google.com/app/apikey))
+
+
+
+### Installation### Installation
+
+
+
+```bash```bash
+
+# Clone repository# Clone repository
+
+git clone https://github.com/Nishant-0203/ResumeUp.AI.gitgit clone https://github.com/Nishant-0203/ResumeUp.AI.git
+
+cd ResumeUp.AIcd ResumeUp.AI
+
+
+
+# Backend setup# Backend setup
+
+cd backendcd backend
+
+npm installnpm install
+
+
+
+# Frontend setup# Frontend setup
+
+cd ../frontendcd ../frontend
+
+npm installnpm install
+
+``````
+
+
+
+### Environment Setup### Environment Setup
+
+
+
+Create `backend/.env`:Create `backend/.env`:
+
+
+
+```env```env
+
+PORT=5000PORT=5000
+
+NODE_ENV=developmentNODE_ENV=development
+
+FRONTEND_URL=http://localhost:5173FRONTEND_URL=http://localhost:5173
+
+      
+
+MONGODB_URI=mongodb://localhost:27017/resumeup-aiMONGODB_URI=mongodb://localhost:27017/resumeup-ai
+
+GOOGLE_API_KEY=your_google_gemini_api_keyGOOGLE_API_KEY=your_google_gemini_api_key
+
+JWT_SECRET=your_jwt_secretJWT_SECRET=your_jwt_secret
+
+SESSION_SECRET=your_session_secretSESSION_SECRET=your_session_secret
+
+
+
+# Optional - for Google OAuth# Optional
+
+GOOGLE_CLIENT_ID=your_google_client_idGOOGLE_CLIENT_ID=your_google_client_id
+
+GOOGLE_CLIENT_SECRET=your_google_client_secretGOOGLE_CLIENT_SECRET=your_google_client_secret
+
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+
+# Optional - for image uploadsCLOUDINARY_API_KEY=your_api_key
+
+CLOUDINARY_CLOUD_NAME=your_cloud_nameCLOUDINARY_API_SECRET=your_api_secret
+
+CLOUDINARY_API_KEY=your_api_key```
+
+CLOUDINARY_API_SECRET=your_api_secret
+
+```### Run Development Servers
+
+
+
+### Run Development Servers```bash
+
+# Backend (Terminal 1)
+
+```bashcd backend
+
+# Backend (Terminal 1)npm run dev
+
+cd backend
+
+npm run dev# Frontend (Terminal 2)
+
+cd frontend
+
+# Frontend (Terminal 2)npm run dev
+
+cd frontend```
+
+npm run dev
+
+```**Access:** Frontend at [http://localhost:5173](http://localhost:5173)
+
+
+
+**Access:** Frontend at [http://localhost:5173](http://localhost:5173)## 📚 API Endpoints   
+
+
+
+---   # Database
+
+
+
+## 📚 API Endpoints### Authentication   MONGODB_URI=mongodb://localhost:27017/resumeup-ai
+
+
+
+### Authentication   # OR for MongoDB Atlas:
+
+
+
+| Method | Endpoint | Description | Auth Required || Method | Endpoint | Description | Auth Required |   # MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/resumeup-ai
+
+|--------|----------|-------------|---------------|
+
+| POST | `/api/auth/signup` | Register new user | No ||--------|----------|-------------|---------------|   
+
+| POST | `/api/auth/signin` | Login user | No |
+
+| GET | `/api/auth/google` | Google OAuth login | No || POST | `/api/auth/signup` | Register new user | No |   # AI Services
+
+
+
+### Resume Analysis| POST | `/api/auth/signin` | Login user | No |   GOOGLE_API_KEY=your_google_gemini_api_key_here
+
+
+
+| Method | Endpoint | Description | Auth Required || GET | `/api/auth/google` | Google OAuth login | No |   
+
+|--------|----------|-------------|---------------|
+
+| POST | `/api/analyze-resume` | Upload and analyze resume PDF | Yes || GET | `/api/auth/google/callback` | Google OAuth callback | No |   # Authentication
+
+| GET | `/api/analysis` | Get all user analyses | Yes |
+
+| GET | `/api/analysis/:id` | Get specific analysis | Yes |   JWT_SECRET=your_super_secret_jwt_key_here
+
+
+
+### Quiz & Jobs### Resume Analysis   SESSION_SECRET=your_session_secret_here
+
+
+
+| Method | Endpoint | Description | Auth Required |   
+
+|--------|----------|-------------|---------------|
+
+| GET | `/api/quiz/generate/:analysisId` | Generate quiz from analysis | Yes || Method | Endpoint | Description | Auth Required |   # Google OAuth (Optional)
+
+| GET | `/api/jobs/recommendations` | Get personalized job recommendations | Yes |
+
+|--------|----------|-------------|---------------|   GOOGLE_CLIENT_ID=your_google_client_id
+
+### User
+
+| POST | `/api/analyze-resume` | Upload and analyze resume PDF | Yes |   GOOGLE_CLIENT_SECRET=your_google_client_secret
+
+| Method | Endpoint | Description | Auth Required |
+
+|--------|----------|-------------|---------------|| GET | `/api/analysis` | Get all user analyses | Yes |   
+
+| GET | `/api/user/profile` | Get user profile | Yes |
+
+| POST | `/api/user/upload-image` | Upload profile image | Yes || GET | `/api/analysis/:id` | Get specific analysis | Yes |   # Cloudinary (Optional - for image uploads)
+
+
+
+### Contact   CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+
+
+
+| Method | Endpoint | Description | Auth Required |### Quiz   CLOUDINARY_API_KEY=your_cloudinary_api_key
+
+|--------|----------|-------------|---------------|
+
+| POST | `/api/contact` | Submit contact form | No |   CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+
+
+
+---| Method | Endpoint | Description | Auth Required |   ```
+
+
+
+## 📁 Project Structure|--------|----------|-------------|---------------|
+
+
+
+```| GET | `/api/quiz/generate/:analysisId` | Generate quiz from analysis | Yes |5. **Start Development Servers**
+
+ResumeUp.AI/
+
+├── backend/
+
+│   ├── config/          # Configuration (Cloudinary, validation)
+
+│   ├── controllers/     # Route controllers### Jobs   **Backend** (Terminal 1):
+
+│   ├── db/             # Database configuration
+
+│   ├── middleware/     # Auth, error handling, rate limiting   ```bash
+
+│   ├── models/         # Database models
+
+│   ├── routes/         # API routes| Method | Endpoint | Description | Auth Required |   cd backend
+
+│   ├── utils/          # Utility functions
+
+│   └── server.js       # Main server file|--------|----------|-------------|---------------|   npm run dev
+
+│
+
+├── frontend/| GET | `/api/jobs/recommendations` | Get personalized job recommendations | Yes |   ```
+
+│   ├── public/         # Static assets
+
+│   ├── src/
+
+│   │   ├── components/ # Reusable components
+
+│   │   ├── contexts/   # React contexts### User   **Frontend** (Terminal 2):
+
+│   │   ├── pages/      # Page components
+
+│   │   ├── services/   # API service functions   ```bash
+
+│   │   └── App.jsx     # Main app component
+
+│   ├── tailwind.config.js| Method | Endpoint | Description | Auth Required |   cd frontend
+
+│   └── vite.config.js
+
+│|--------|----------|-------------|---------------|   npm run dev
+
+└── README.md
+
+```| GET | `/api/user/profile` | Get user profile | Yes |   ```
+
+
+
+---| POST | `/api/user/upload-image` | Upload profile image | Yes |
+
+
+
+## 🌐 Deployment6. **Access the Application**
+
+
+
+### Frontend (Vercel)### Contact   - Frontend: [http://localhost:5173](http://localhost:5173)
+
+
+
+1. Push code to GitHub   - Backend API: [http://localhost:5000](http://localhost:5000)
+
+2. Import repository on [Vercel](https://vercel.com)
+
+3. Configure build settings:| Method | Endpoint | Description | Auth Required |   - Health Check: [http://localhost:5000/api/health](http://localhost:5000/api/health)
+
+   - Framework: `Vite`
+
+   - Root Directory: `frontend`|--------|----------|-------------|---------------|
+
+   - Build Command: `npm run build`
+
+   - Output Directory: `dist`| POST | `/api/contact` | Submit contact form | No |---
+
+
+
+### Backend (Railway/Render)
+
+
+
+1. Deploy `backend` directory---## 📁 Project Structure
+
+2. Set all environment variables
+
+3. Ensure start script: `node server.js`
+
+
+
+### Database (MongoDB Atlas)## 🌐 Deployment```
+
+
+
+1. Create free cluster at [MongoDB Atlas](https://mongodb.com/atlas)ResumeUp.AI/
+
+2. Get connection string
+
+3. Update `MONGODB_URI` in environment variables### Frontend Deployment (Vercel)├── 📁 backend/
+
+
+
+---│   ├── 📁 config/           # Configuration files
+
+
+
+## 🎨 Features Deep Dive1. Push your code to GitHub│   │   ├── cloudinary.js    # Cloudinary setup
+
+
+
+### Resume Analysis Engine2. Visit [vercel.com](https://vercel.com) and import your repository│   │   └── validateEnv.js   # Environment validation
+
+- PDF text extraction with advanced parsing
+
+- AI-powered insights for strengths and weaknesses3. Configure build settings:│   ├── 📁 controllers/      # Route controllers
+
+- Optional job description comparison
+
+- Structured analysis results in JSON format   - **Framework Preset**: Vite│   │   ├── analysisController.js
+
+
+
+### Smart Career Guidance   - **Root Directory**: `frontend`│   │   ├── authController.js
+
+- Skill gap analysis with course recommendations
+
+- Personalized job recommendations with matching scores   - **Build Command**: `npm run build`│   │   ├── contactController.js
+
+- Career progress tracking with visual indicators
+
+- Achievement tracking system   - **Output Directory**: `dist`│   │   ├── jobController.js
+
+
+
+### Interactive Learning Platform│   │   ├── quizController.js
+
+- Dynamic quiz generation based on identified weaknesses
+
+- Multi-category questions (Technical, Leadership, Soft Skills)### Backend Deployment (Railway/Render/Heroku)│   │   └── userController.js
+
+- Detailed explanations for incorrect answers
+
+- Progress analytics and performance tracking│   ├── 📁 db/              # Database configuration
+
+
+
+### User Experience1. Set all environment variables in your platform│   │   └── mongoose.js
+
+- Comprehensive user dashboard
+
+- Profile management with image upload2. Deploy the `backend` directory│   ├── 📁 middleware/      # Custom middleware
+
+- Built-in contact system
+
+- Fully responsive design3. Ensure `start` script is configured in `package.json`│   │   ├── auth.js         # JWT authentication
+
+
+
+---│   │   ├── errorHandler.js # Global error handling
+
+
+
+## 🔐 Security Features### Database (MongoDB Atlas)│   │   ├── rateLimiter.js  # Rate limiting
+
+
+
+- JWT-based authentication with 7-day expiration│   │   └── upload.js       # File upload handling
+
+- Password hashing with bcrypt
+
+- Rate limiting on sensitive endpoints1. Create a free cluster at [mongodb.com/atlas](https://mongodb.com/atlas)│   ├── 📁 models/          # Database models
+
+- CORS configuration
+
+- Environment variable validation2. Get your connection string│   │   ├── Analysis.js
+
+- Protected route middleware
+
+3. Update `MONGODB_URI` in your environment variables│   │   ├── Contact.js
+
+---
+
+│   │   ├── Job.js
+
+## 🤝 Contributing
+
+---│   │   └── User.js
+
+We welcome contributions! Follow these steps:
+
+│   ├── 📁 routes/          # API routes
+
+1. Fork the repository
+
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)## 🤝 Contributing│   │   ├── analysisRoutes.js
+
+3. Commit your changes (`git commit -m "Add amazing feature"`)
+
+4. Push to your branch (`git push origin feature/amazing-feature`)│   │   ├── authRoutes.js
+
+5. Open a Pull Request
+
+We welcome contributions! Please follow these steps:│   │   ├── contactRoutes.js
+
+### Development Guidelines
+
+- Follow existing code style and conventions│   │   ├── jobRoutes.js
+
+- Add tests for new features
+
+- Update documentation as needed1. Fork the repository│   │   ├── quizRoutes.js
+
+- Ensure all tests pass before submitting PR
+
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)│   │   └── userRoutes.js
+
+---
+
+3. Commit your changes (`git commit -m "Add amazing feature"`)│   ├── 📁 uploads/         # Static file uploads
+
+## 🐛 Known Issues
+
+4. Push to your branch (`git push origin feature/amazing-feature`)│   ├── 📁 utils/           # Utility functions
+
+For detailed fix history, see [FIXES_IMPLEMENTED.md](./FIXES_IMPLEMENTED.md)
+
+5. Open a Pull Request│   │   └── responseFormatter.js
+
+---
+
+│   ├── package.json
+
+## 🚧 Roadmap
+
+---│   ├── server.js           # Main server file
+
+### Upcoming Features
+
+- [ ] Advanced Analytics Dashboard│   └── start-server.js     # Server startup script
+
+- [ ] Resume Templates & Builder
+
+- [ ] Video Interview Practice## 📄 License│
+
+- [ ] LinkedIn Integration
+
+- [ ] Mobile App Development├── 📁 frontend/
+
+- [ ] Multi-language Support
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.│   ├── 📁 public/          # Static assets
+
+---
+
+│   ├── 📁 src/
+
+## 📄 License
+
+---│   │   ├── 📁 components/  # Reusable components
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+│   │   │   ├── 📁 contact/     # Contact page components
+
+---
+
+## 👨‍💻 Author│   │   │   ├── 📁 dashboard/   # Dashboard components
+
+## 👨‍💻 Author
+
+│   │   │   ├── 📁 layout/      # Layout components
+
+**Nishant Bhalla**
+
+- GitHub: [@Nishant-0203](https://github.com/Nishant-0203)**Nishant Bhalla**│   │   │   ├── 📁 section/     # Homepage sections
+
+- LinkedIn: [Connect with me](https://linkedin.com/in/nishant-bhalla)
+
+- GitHub: [@Nishant-0203](https://github.com/Nishant-0203)│   │   │   └── 📁 ui/          # UI components
+
+---
+
+- LinkedIn: [Connect with me](https://linkedin.com/in/nishant-bhalla)│   │   ├── 📁 contexts/    # React contexts
+
+## 🙏 Acknowledgments
+
+│   │   │   └── UserContext.jsx
+
+- **Google Gemini AI** for powerful AI capabilities
+
+- **MongoDB** for reliable database services---│   │   ├── 📁 lib/         # Utility libraries
+
+- **Cloudinary** for image management
+
+- **React & Tailwind** communities for excellent documentation│   │   ├── 📁 pages/       # Page components
+
+- **Open Source Contributors** for inspiration and guidance
+
+## 🙏 Acknowledgments│   │   │   ├── 📁 user/        # User-related pages
+
+---
+
+│   │   │   ├── analysis.jsx
 
 <div align="center">
 
-[![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
-[![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
-[![React](https://img.shields.io/badge/React-18+-blue.svg)](https://reactjs.org/)
-[![MongoDB](https://img.shields.io/badge/MongoDB-6+-green.svg)](https://mongodb.com/)
+- **Google Gemini AI** for powerful AI capabilities│   │   │   ├── contact.jsx
 
-**AI-Powered Resume Analysis & Career Growth Platform**
+**⭐ Star this repository if you found it helpful!**
 
-Transform your career with intelligent resume analysis, personalized skill recommendations, and AI-generated quizzes designed to accelerate your professional growth.
+- **MongoDB** for reliable database services│   │   │   ├── index.jsx
 
-[🌟 Live Demo](https://resumeup-ai.vercel.app) | [📖 Documentation](https://github.com/Nishant-0203/ResumeUp.AI) | [🐛 Report Bug](https://github.com/Nishant-0203/ResumeUp.AI/issues)
+Made with ❤️ by [Nishant Bhalla](https://github.com/Nishant-0203)
+
+- **Cloudinary** for image management│   │   │   └── quiz.jsx
 
 </div>
 
----
+- **React & Tailwind** communities for excellent documentation│   │   ├── 📁 services/    # API service functions
 
-## 📋 Table of Contents
+- **Open Source Contributors** for inspiration and guidance│   │   ├── App.jsx         # Main app component
 
-- [🎯 Overview](#-overview)
-- [✨ Key Features](#-key-features)
-- [🛠️ Tech Stack](#️-tech-stack)
-- [🏗️ Architecture](#️-architecture)
-- [🚀 Quick Start](#-quick-start)
-- [📁 Project Structure](#-project-structure)
-- [🔧 Configuration](#-configuration)
-- [📚 API Documentation](#-api-documentation)
-- [🎨 Frontend Features](#-frontend-features)
-- [🔐 Authentication](#-authentication)
-- [🌐 Deployment](#-deployment)
-- [🧪 Testing](#-testing)
-- [🤝 Contributing](#-contributing)
-- [📄 License](#-license)
-
----
-
-## 🎯 Overview
-
-**ResumeUp.AI** is a comprehensive full-stack MERN application that revolutionizes the way job seekers approach career development. By leveraging Google Gemini AI, it provides intelligent resume analysis, personalized career guidance, and interactive learning experiences.
-
-### 🎪 What Makes ResumeUp.AI Special?
-
-- **🤖 AI-Powered Analysis**: Advanced resume parsing and analysis using Google Gemini AI
-- **🎯 Personalized Recommendations**: Tailored job suggestions based on your skills and experience  
-- **📚 Interactive Learning**: Dynamic quizzes generated from your resume weaknesses
-- **📊 Progress Tracking**: Visual dashboards to monitor your career growth
-- **🔐 Secure Authentication**: JWT-based auth with Google OAuth integration
-- **📱 Responsive Design**: Beautiful, modern UI that works on all devices
-
----
-
-## ✨ Key Features
-
-### 🔍 **Resume Analysis Engine**
-- **PDF Text Extraction**: Advanced parsing of PDF resumes with error handling
-- **AI-Powered Insights**: Comprehensive analysis of strengths, weaknesses, and improvement areas
-- **Job Matching**: Optional job description comparison for targeted feedback
-- **Structured Data Output**: Organized analysis results in JSON format
-
-### 🎯 **Smart Career Guidance**
-- **Skill Gap Analysis**: Identify missing skills for your target roles
-- **Course Recommendations**: Curated learning paths based on your weaknesses
-- **Job Recommendations**: AI-generated job suggestions with matching scores
-- **Career Progress Tracking**: Visual progress indicators and achievement tracking
-
-### 🧠 **Interactive Learning Platform**
-- **Dynamic Quiz Generation**: Personalized quizzes based on identified weaknesses
-- **Multi-Category Questions**: Technical, Experience, Leadership, and Soft Skills
-- **Detailed Explanations**: Learn from incorrect answers with comprehensive explanations
-- **Progress Analytics**: Track quiz performance and improvement over time
-
-### 👤 **User Experience**
-- **User Dashboard**: Comprehensive overview of analysis history and progress
-- **Profile Management**: Upload profile pictures with automatic image optimization
-- **Contact System**: Built-in contact form for user support and feedback
-- **Responsive Design**: Seamless experience across desktop, tablet, and mobile
-
----
-
-## 🛠️ Tech Stack
-
-### **Frontend**
-- **⚛️ React 19.1.0** - Modern UI library with hooks and context
-- **🎨 Tailwind CSS 4.1.11** - Utility-first CSS framework
-- **📱 Framer Motion 12.23.9** - Smooth animations and transitions
-- **🎯 Radix UI** - Accessible, unstyled UI components
-- **📊 Recharts 2.15.4** - Beautiful, composable charts
-- **🔀 React Router DOM 7.7.0** - Client-side routing
-- **📡 Axios 1.10.0** - HTTP client for API requests
-
-### **Backend**
-- **🟢 Node.js** - JavaScript runtime environment
-- **🚀 Express.js 4.18.2** - Fast, minimalist web framework
-- **🍃 MongoDB** - NoSQL database with Mongoose ODM
-- **🤖 Google Generative AI 0.2.1** - Gemini AI integration
-- **🔐 JWT + Passport** - Authentication and authorization
-- **☁️ Cloudinary** - Image upload and optimization
-- **📄 PDF-Parse** - PDF text extraction
-- **🛡️ bcryptjs** - Password hashing
-
-### **DevOps & Tools**
-- **⚡ Vite 7.0.4** - Lightning-fast build tool
-- **🔍 ESLint** - Code linting and formatting
-- **🔧 Nodemon** - Development server auto-restart
-- **📦 Multer** - File upload middleware
-
----
-
-## 🏗️ Architecture
-
-```mermaid
-graph TB
-    A[Frontend - React/Vite] --> B[API Gateway - Express.js]
-    B --> C[Authentication - JWT/Passport]
-    B --> D[File Upload - Multer/Cloudinary]
-    B --> E[AI Engine - Google Gemini]
-    B --> F[Database - MongoDB]
-    
-    C --> G[Google OAuth]
-    E --> H[Resume Analysis]
-    E --> I[Quiz Generation]
-    E --> J[Job Recommendations]
-    
-    F --> K[Users Collection]
-    F --> L[Analysis Collection]
-    F --> M[Jobs Collection]
-    F --> N[Contact Collection]
-```
-
----
-
-## 🚀 Quick Start
-
-### 📋 Prerequisites
-
-- **Node.js** (v18.0.0 or higher)
-- **npm** (v8.0.0 or higher) 
-- **MongoDB** (local or Atlas cloud)
-- **Google Gemini API Key** ([Get it here](https://aistudio.google.com/app/apikey))
-
-### ⚡ Installation
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/Nishant-0203/ResumeUp.AI.git
-   cd ResumeUp.AI
-   ```
-
-2. **Backend Setup**
-   ```bash
-   cd backend
-   npm install
-   ```
-
-3. **Frontend Setup**
-   ```bash
-   cd ../frontend
-   npm install
-   ```
-
-4. **Environment Configuration**
-   
-   Create `.env` file in the `backend` directory:
-   ```env
-   # Server Configuration
-   PORT=5000
-   NODE_ENV=development
-   FRONTEND_URL=http://localhost:5173
-   
-   # Database
-   MONGODB_URI=mongodb://localhost:27017/resumeup-ai
-   # OR for MongoDB Atlas:
-   # MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/resumeup-ai
-   
-   # AI Services
-   GOOGLE_API_KEY=your_google_gemini_api_key_here
-   
-   # Authentication
-   JWT_SECRET=your_super_secret_jwt_key_here
-   SESSION_SECRET=your_session_secret_here
-   
-   # Google OAuth (Optional)
-   GOOGLE_CLIENT_ID=your_google_client_id
-   GOOGLE_CLIENT_SECRET=your_google_client_secret
-   
-   # Cloudinary (Optional - for image uploads)
-   CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
-   CLOUDINARY_API_KEY=your_cloudinary_api_key
-   CLOUDINARY_API_SECRET=your_cloudinary_api_secret
-   ```
-
-5. **Start Development Servers**
-
-   **Backend** (Terminal 1):
-   ```bash
-   cd backend
-   npm run dev
-   ```
-
-   **Frontend** (Terminal 2):
-   ```bash
-   cd frontend
-   npm run dev
-   ```
-
-6. **Access the Application**
-   - Frontend: [http://localhost:5173](http://localhost:5173)
-   - Backend API: [http://localhost:5000](http://localhost:5000)
-   - Health Check: [http://localhost:5000/api/health](http://localhost:5000/api/health)
-
----
-
-## 📁 Project Structure
-
-```
-ResumeUp.AI/
-├── 📁 backend/
-│   ├── 📁 config/           # Configuration files
-│   │   ├── cloudinary.js    # Cloudinary setup
-│   │   └── validateEnv.js   # Environment validation
-│   ├── 📁 controllers/      # Route controllers
-│   │   ├── analysisController.js
-│   │   ├── authController.js
-│   │   ├── contactController.js
-│   │   ├── jobController.js
-│   │   ├── quizController.js
-│   │   └── userController.js
-│   ├── 📁 db/              # Database configuration
-│   │   └── mongoose.js
-│   ├── 📁 middleware/      # Custom middleware
-│   │   ├── auth.js         # JWT authentication
-│   │   ├── errorHandler.js # Global error handling
-│   │   ├── rateLimiter.js  # Rate limiting
-│   │   └── upload.js       # File upload handling
-│   ├── 📁 models/          # Database models
-│   │   ├── Analysis.js
-│   │   ├── Contact.js
-│   │   ├── Job.js
-│   │   └── User.js
-│   ├── 📁 routes/          # API routes
-│   │   ├── analysisRoutes.js
-│   │   ├── authRoutes.js
-│   │   ├── contactRoutes.js
-│   │   ├── jobRoutes.js
-│   │   ├── quizRoutes.js
-│   │   └── userRoutes.js
-│   ├── 📁 uploads/         # Static file uploads
-│   ├── 📁 utils/           # Utility functions
-│   │   └── responseFormatter.js
-│   ├── package.json
-│   ├── server.js           # Main server file
-│   └── start-server.js     # Server startup script
-│
-├── 📁 frontend/
-│   ├── 📁 public/          # Static assets
-│   ├── 📁 src/
-│   │   ├── 📁 components/  # Reusable components
-│   │   │   ├── 📁 contact/     # Contact page components
-│   │   │   ├── 📁 dashboard/   # Dashboard components
-│   │   │   ├── 📁 layout/      # Layout components
-│   │   │   ├── 📁 section/     # Homepage sections
-│   │   │   └── 📁 ui/          # UI components
-│   │   ├── 📁 contexts/    # React contexts
-│   │   │   └── UserContext.jsx
-│   │   ├── 📁 lib/         # Utility libraries
-│   │   ├── 📁 pages/       # Page components
-│   │   │   ├── 📁 user/        # User-related pages
-│   │   │   ├── analysis.jsx
-│   │   │   ├── contact.jsx
-│   │   │   ├── index.jsx
-│   │   │   └── quiz.jsx
-│   │   ├── 📁 services/    # API service functions
-│   │   ├── App.jsx         # Main app component
 │   │   └── main.jsx        # App entry point
-│   ├── components.json     # shadcn/ui config
+
+---│   ├── components.json     # shadcn/ui config
+
 │   ├── tailwind.config.js  # Tailwind configuration
-│   ├── vite.config.js      # Vite configuration
+
+<div align="center">│   ├── vite.config.js      # Vite configuration
+
 │   └── package.json
-│
+
+**⭐ Star this repository if you found it helpful!**│
+
 ├── 📄 README.md
-├── 📄 FIXES_IMPLEMENTED.md
+
+Made with ❤️ by [Nishant Bhalla](https://github.com/Nishant-0203)├── 📄 FIXES_IMPLEMENTED.md
+
 └── 📄 IMAGE_UPLOAD_FEATURE.md
-```
+
+</div>```
+
 
 ---
 
