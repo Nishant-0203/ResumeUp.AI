@@ -958,7 +958,7 @@ Content-Type: multipart/form-data
 
 2. **Get Connection String**
    ```
-   mongodb+srv://username:password@cluster.mongodb.net/resumeup-ai
+   mongodb+srv://username:password@cluster.mongodb.net
    ```
 
 ---
