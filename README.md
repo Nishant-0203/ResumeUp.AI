@@ -220,7 +220,7 @@ FRONTEND_URL=http://localhost:5173
 # Database
 MONGODB_URI=mongodb://localhost:27017/resumeup
 # Or use MongoDB Atlas:
-# MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/resumeup
+# MONGODB_URI=your_mongoDB_link
 
 # Authentication
 JWT_SECRET=your_super_secret_jwt_key_change_this_in_production
