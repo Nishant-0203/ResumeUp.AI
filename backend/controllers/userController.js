@@ -19,39 +19,49 @@ async function dashboard(req, res) {
 
 async function uploadImage(req, res) {
   try {
+    console.log('[uploadImage] Request received');
+    console.log('[uploadImage] File:', req.file);
+    
     if (!req.file) {
-      return res.status(400).json({ error: 'No image file provided.' });
+      console.log('[uploadImage] ❌ No file provided');
+      return res.status(400).json({ 
+        success: false,
+        error: 'No image file provided.' 
+      });
     }
 
     const userId = req.user.id;
     const user = await User.findById(userId);
     
     if (!user) {
-      return res.status(404).json({ error: 'User not found.' });
+      console.log('[uploadImage] ❌ User not found:', userId);
+      return res.status(404).json({ 
+        success: false,
+        error: 'User not found.' 
+      });
     }
 
-    // Delete old image if it exists
-    if (user.image) {
-      const oldImagePath = path.join(__dirname, '..', '..', user.image);
-      if (fs.existsSync(oldImagePath)) {
-        fs.unlinkSync(oldImagePath);
-      }
-    }
-
-    // Update user with new image path
-    const imagePath = `uploads/${req.file.filename}`;
-    user.image = imagePath;
+    // Cloudinary URL is in req.file.path
+    const imageUrl = req.file.path;
+    
+    console.log('[uploadImage] Cloudinary URL:', imageUrl);
+    
+    // Update user with new image URL from Cloudinary
+    user.image = imageUrl;
     await user.save();
 
     console.log('[uploadImage] ✅ Image uploaded successfully for user:', userId);
     res.json({ 
       success: true, 
       message: 'Image uploaded successfully.',
-      image: imagePath 
+      image: imageUrl 
     });
   } catch (error) {
     console.error('[uploadImage] Error:', error);
-    res.status(500).json({ error: 'Server error.' });
+    res.status(500).json({ 
+      success: false,
+      error: 'Server error uploading image.' 
+    });
   }
 }
 

@@ -7,7 +7,7 @@ const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 // Generate quiz based on a single weakness
 async function generateQuizForWeakness(weakness) {
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
     const quizPrompt = `
     Based on the following weakness, create a quiz with 5 multiple choice questions to help the candidate improve in this area:
     Weakness: ${weakness}

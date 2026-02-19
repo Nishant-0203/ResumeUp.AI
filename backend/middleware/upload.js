@@ -4,20 +4,20 @@ const cloudinary = require('cloudinary').v2;
 
 // Cloudinary config (auto-reads CLOUDINARY_URL from .env)
 cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME, // optional if CLOUDINARY_URL is set
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
+  secure: true // Use HTTPS
 });
 
-// 📄 Resume (PDF) upload
-const pdfStorage = new CloudinaryStorage({
-  cloudinary,
-  params: {
-    folder: 'resumes',        // Cloudinary folder
-    resource_type: 'raw',     // needed for pdf/docx
-    format: async () => 'pdf' // force pdf format
-  },
+console.log('[upload.js] Cloudinary configured:', {
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY ? '***' + process.env.CLOUDINARY_API_KEY.slice(-4) : 'missing',
+  api_secret: process.env.CLOUDINARY_API_SECRET ? '***' + process.env.CLOUDINARY_API_SECRET.slice(-4) : 'missing'
 });
+
+// 📄 Resume (PDF) upload - Use memory storage for immediate processing
+const pdfStorage = multer.memoryStorage();
 
 const upload = multer({
   storage: pdfStorage,
@@ -66,4 +66,4 @@ const imageUpload = multer({
   limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
 });
 
-module.exports = { upload, imageUpload };
+module.exports = { upload, imageUpload, cloudinary };

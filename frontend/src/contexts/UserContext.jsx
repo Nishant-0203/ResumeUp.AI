@@ -77,14 +77,15 @@ export const UserProvider = ({ children }) => {
   };
 
   const updateUserImage = (imagePath) => {
-    setUser(prevUser => ({
-      ...prevUser,
-      image: imagePath
-    }));
-    
-    // Update localStorage
-    const updatedUser = { ...user, image: imagePath };
-    localStorage.setItem('user', JSON.stringify(updatedUser));
+    setUser(prevUser => {
+      const updatedUser = {
+        ...prevUser,
+        image: imagePath
+      };
+      // Update localStorage with the new user data
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      return updatedUser;
+    });
   };
 
   const checkAuth = async () => {

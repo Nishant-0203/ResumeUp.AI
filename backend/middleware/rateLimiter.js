@@ -15,13 +15,17 @@ const generalLimiter = rateLimit({
 // Stricter rate limiting for AI analysis endpoints
 const analysisLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // Limit each IP to 5 analysis requests per windowMs
+  max: process.env.NODE_ENV === 'production' ? 10 : 50, // More lenient in development
   message: {
     error: 'Analysis rate limit exceeded. Please wait before analyzing another resume.',
     retryAfter: '15 minutes'
   },
   standardHeaders: true,
   legacyHeaders: false,
+  // Skip rate limiting for successful requests to be more lenient
+  skipSuccessfulRequests: false,
+  // Skip failed requests to only count successful analyses
+  skipFailedRequests: true,
 });
 
 // Auth rate limiting

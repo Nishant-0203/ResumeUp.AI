@@ -4,13 +4,15 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Menu, X, User, LogOut } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useUser } from "@/contexts/UserContext";
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const { user, logout } = useUser();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -21,9 +23,37 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
+  useEffect(() => {
+    // Handle hash navigation when coming from another page
+    if (location.hash) {
+      setTimeout(() => {
+        const element = document.getElementById(location.hash.substring(1));
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+    }
+  }, [location]);
+
   const handleLogout = () => {
     logout();
     setIsMobileMenuOpen(false);
+  };
+
+  const handleSectionClick = (e, sectionId) => {
+    e.preventDefault();
+    setIsMobileMenuOpen(false);
+    
+    // If we're on the homepage, scroll to section
+    if (location.pathname === '/') {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    } else {
+      // Navigate to homepage with hash
+      navigate(`/#${sectionId}`);
+    }
   };
 
   return (
@@ -45,21 +75,30 @@ export function Navbar() {
             </div>
 
             <nav className="hidden md:flex items-center space-x-8">
-              <Link to="#features" className="text-gray-700 hover:text-[#a78bfa] transition-colors font-medium">
+              <a 
+                href="#features" 
+                onClick={(e) => handleSectionClick(e, 'features')}
+                className="text-gray-700 hover:text-[#a78bfa] transition-colors font-medium cursor-pointer"
+              >
                 Features
-              </Link>
+              </a>
               <Link to="/contact" className="text-gray-700 hover:text-[#a78bfa] transition-colors font-medium">
                 Contact
               </Link>
-              <Link to="#how-it-works" className="text-gray-700 hover:text-[#a78bfa] transition-colors font-medium">
+              <a 
+                href="#how-it-works" 
+                onClick={(e) => handleSectionClick(e, 'how-it-works')}
+                className="text-gray-700 hover:text-[#a78bfa] transition-colors font-medium cursor-pointer"
+              >
                 How It Works
-              </Link>
-              <Link to="#pricing" className="text-gray-700 hover:text-[#a78bfa] transition-colors font-medium">
+              </a>
+              <a 
+                href="#pricing" 
+                onClick={(e) => handleSectionClick(e, 'pricing')}
+                className="text-gray-700 hover:text-[#a78bfa] transition-colors font-medium cursor-pointer"
+              >
                 Pricing
-              </Link>
-              <Link to="#about" className="text-gray-700 hover:text-[#a78bfa] transition-colors font-medium">
-                About
-              </Link>
+              </a>
             </nav>
 
             <div className="hidden md:flex items-center">
@@ -120,18 +159,30 @@ export function Navbar() {
               </Button>
             </div>
             <nav className="flex flex-col items-center justify-center h-full space-y-8">
-              <Link to="#features" className="text-2xl font-medium" onClick={() => setIsMobileMenuOpen(false)}>
+              <a 
+                href="#features" 
+                onClick={(e) => handleSectionClick(e, 'features')}
+                className="text-2xl font-medium cursor-pointer"
+              >
                 Features
+              </a>
+              <Link to="/contact" className="text-2xl font-medium" onClick={() => setIsMobileMenuOpen(false)}>
+                Contact
               </Link>
-              <Link to="#how-it-works" className="text-2xl font-medium" onClick={() => setIsMobileMenuOpen(false)}>
+              <a 
+                href="#how-it-works" 
+                onClick={(e) => handleSectionClick(e, 'how-it-works')}
+                className="text-2xl font-medium cursor-pointer"
+              >
                 How It Works
-              </Link>
-              <Link to="#pricing" className="text-2xl font-medium" onClick={() => setIsMobileMenuOpen(false)}>
+              </a>
+              <a 
+                href="#pricing" 
+                onClick={(e) => handleSectionClick(e, 'pricing')}
+                className="text-2xl font-medium cursor-pointer"
+              >
                 Pricing
-              </Link>
-              <Link to="#about" className="text-2xl font-medium" onClick={() => setIsMobileMenuOpen(false)}>
-                About
-              </Link>
+              </a>
               <div className="pt-8 flex flex-col space-y-4">
                 {user ? (
                   <>

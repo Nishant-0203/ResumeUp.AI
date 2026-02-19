@@ -1,7 +1,25 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Github, Twitter, Linkedin, Instagram } from "lucide-react";
 
 export function Footer() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleSectionClick = (e, sectionId) => {
+    e.preventDefault();
+    
+    // If we're on the homepage, scroll to section
+    if (location.pathname === '/') {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    } else {
+      // Navigate to homepage with hash
+      navigate(`/#${sectionId}`);
+    }
+  };
+
   return (
     <footer className="bg-white/30 backdrop-blur-md border-t border-gray-100 py-12 mt-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -37,24 +55,31 @@ export function Footer() {
             <h3 className="font-semibold text-lg mb-4">Product</h3>
             <ul className="space-y-3">
               <li>
-                <Link to="#" className="text-gray-600 hover:text-[#a78bfa] transition-colors">
+                <a 
+                  href="#features" 
+                  onClick={(e) => handleSectionClick(e, 'features')}
+                  className="text-gray-600 hover:text-[#a78bfa] transition-colors cursor-pointer"
+                >
                   Features
-                </Link>
+                </a>
               </li>
               <li>
-                <Link to="#" className="text-gray-600 hover:text-[#a78bfa] transition-colors">
+                <a 
+                  href="#pricing" 
+                  onClick={(e) => handleSectionClick(e, 'pricing')}
+                  className="text-gray-600 hover:text-[#a78bfa] transition-colors cursor-pointer"
+                >
                   Pricing
-                </Link>
+                </a>
               </li>
               <li>
-                <Link to="#" className="text-gray-600 hover:text-[#a78bfa] transition-colors">
-                  Testimonials
-                </Link>
-              </li>
-              <li>
-                <Link to="#" className="text-gray-600 hover:text-[#a78bfa] transition-colors">
-                  FAQ
-                </Link>
+                <a 
+                  href="#how-it-works" 
+                  onClick={(e) => handleSectionClick(e, 'how-it-works')}
+                  className="text-gray-600 hover:text-[#a78bfa] transition-colors cursor-pointer"
+                >
+                  How It Works
+                </a>
               </li>
             </ul>
           </div>
@@ -63,28 +88,18 @@ export function Footer() {
             <h3 className="font-semibold text-lg mb-4">Company</h3>
             <ul className="space-y-3">
               <li>
-                <Link to="#" className="text-gray-600 hover:text-[#a78bfa] transition-colors">
-                  About Us
+                <Link to="/" className="text-gray-600 hover:text-[#a78bfa] transition-colors">
+                  Home
                 </Link>
               </li>
               <li>
-                <Link to="#" className="text-gray-600 hover:text-[#a78bfa] transition-colors">
-                  Careers
-                </Link>
-              </li>
-              <li>
-                <Link to="#" className="text-gray-600 hover:text-[#a78bfa] transition-colors">
-                  Privacy Policy
-                </Link>
-              </li>
-              <li>
-                <Link to="#" className="text-gray-600 hover:text-[#a78bfa] transition-colors">
-                  Terms of Service
-                </Link>
-              </li>
-              <li>
-                <Link to="#" className="text-gray-600 hover:text-[#a78bfa] transition-colors">
+                <Link to="/contact" className="text-gray-600 hover:text-[#a78bfa] transition-colors">
                   Contact
+                </Link>
+              </li>
+              <li>
+                <Link to="/analysis" className="text-gray-600 hover:text-[#a78bfa] transition-colors">
+                  Analysis
                 </Link>
               </li>
             </ul>

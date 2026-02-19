@@ -74,7 +74,7 @@ export function ImageUpload({ onImageUpdate }) {
     <div className="relative group">
       <Avatar className="h-20 w-20 border-4 border-white shadow-md cursor-pointer transition-transform group-hover:scale-105">
         <AvatarImage 
-          src={user?.image ? `${API_BASE_URL.replace('/api', '')}/${user.image}` : undefined} 
+          src={user?.image ? (user.image.startsWith('http') ? user.image : `${API_BASE_URL.replace('/api', '')}/${user.image}`) : undefined} 
           alt="User Profile" 
         />
         <AvatarFallback>{getInitials(user?.name || user?.email)}</AvatarFallback>

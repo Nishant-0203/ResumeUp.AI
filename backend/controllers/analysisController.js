@@ -3,24 +3,54 @@ const axios = require('axios');
 const pdfParse = require('pdf-parse');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const Analysis = require('../models/Analysis');
+const { cloudinary } = require('../middleware/upload');
+const { Readable } = require('stream');
 require('dotenv').config();
 
 
 
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 
-// Extract text from PDF
-async function extractTextFromPDF(fileUrl) {
+// Extract text from PDF buffer
+async function extractTextFromPDF(buffer) {
   try {
-    const response = await axios.get(fileUrl, { responseType: 'arraybuffer' });
-    const dataBuffer = response.data;
-
-    const data = await pdfParse(dataBuffer);
+    console.log('[extractTextFromPDF] Processing PDF buffer, size:', buffer.length, 'bytes');
+    
+    const data = await pdfParse(buffer);
+    
+    console.log('[extractTextFromPDF] Successfully extracted text, length:', data.text.length, 'characters');
     return data.text;
   } catch (error) {
-    console.error('Error extracting text from PDF:', error);
+    console.error('Error extracting text from PDF:', error.message);
     throw new Error('Failed to extract text from PDF');
   }
+}
+
+// Upload buffer to Cloudinary
+async function uploadToCloudinary(buffer, filename) {
+  return new Promise((resolve, reject) => {
+    const uploadStream = cloudinary.uploader.upload_stream(
+      {
+        folder: 'resumes',
+        resource_type: 'raw',
+        public_id: `resume_${Date.now()}`,
+        access_mode: 'public'
+      },
+      (error, result) => {
+        if (error) {
+          console.error('[uploadToCloudinary] Upload failed:', error);
+          reject(error);
+        } else {
+          console.log('[uploadToCloudinary] Upload successful:', result.secure_url);
+          resolve(result.secure_url);
+        }
+      }
+    );
+
+    // Convert buffer to stream and pipe to Cloudinary
+    const bufferStream = Readable.from(buffer);
+    bufferStream.pipe(uploadStream);
+  });
 }
 
 // Analyze resume using Gemini AI and get JSON
@@ -30,7 +60,7 @@ async function analyzeResume(resumeText, jobDescription = null) {
     throw new Error('Resume text is required for analysis');
   }
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
     let basePrompt = `
     You are an experienced HR with Technical Experience in the field of any one job role from Data Science, Data Analyst, DevOPS, Machine Learning Engineer, Prompt Engineer, AI Engineer, Full Stack Web Development, Big Data Engineering, Marketing Analyst, Human Resource Manager, Software Developer. Your task is to review the provided resume.
     Please provide your analysis in the following JSON format:
@@ -80,20 +110,44 @@ async function analyzeResume(resumeText, jobDescription = null) {
 
 // Controller: Analyze Resume
 async function analyzeResumeHandler(req, res) {
-  let filePath = null;
+  let cloudinaryUrl = null;
   try {
     if (!req.file) {
       console.log('[analysisController.js][if] ❌ No resume file uploaded');
       return res.status(400).json({ error: 'No resume file uploaded' });
     }
-    filePath = req.file.path;
+    
+    console.log('[analyzeResumeHandler] File received:', {
+      originalname: req.file.originalname,
+      size: req.file.size,
+      mimetype: req.file.mimetype
+    });
+    
     const jobDescription = req.body.jobDescription || '';
-    const resumeText = await extractTextFromPDF(filePath);
+    
+    // Extract text from PDF buffer
+    const resumeText = await extractTextFromPDF(req.file.buffer);
+    
     if (!resumeText.trim()) {
       console.log('[analysisController.js][if] ❌ Could not extract text from PDF');
       return res.status(400).json({ error: 'Could not extract text from the PDF. Please ensure the PDF contains readable text.' });
     }
+    
+    console.log('[analyzeResumeHandler] Text extracted successfully, length:', resumeText.length);
+    
+    // Upload to Cloudinary for storage
+    try {
+      cloudinaryUrl = await uploadToCloudinary(req.file.buffer, req.file.originalname);
+      console.log('[analyzeResumeHandler] File uploaded to Cloudinary:', cloudinaryUrl);
+    } catch (uploadError) {
+      console.error('[analyzeResumeHandler] Cloudinary upload failed, continuing without storage:', uploadError.message);
+      // Continue with analysis even if upload fails
+    }
+    
+    // Analyze the resume
     const analysisResult = await analyzeResume(resumeText, jobDescription);
+    
+    // Save analysis to database
     const analysisRecord = new Analysis({
       user: req.user.id,
       resumeText,
@@ -104,31 +158,16 @@ async function analyzeResumeHandler(req, res) {
     });
     const savedAnalysis = await analysisRecord.save();
     
-    // Clean up uploaded file
-    if (filePath && fs.existsSync(filePath)) {
-      fs.unlink(filePath, (err) => {
-        if (err) console.error('Error deleting file:', err);
-        else console.log('[analysisController.js] ✅ File cleaned up successfully');
-      });
-    }
-    
     res.json({ 
       analysis: analysisResult.raw,
       analysisId: savedAnalysis._id,
       structuredData: analysisResult.json,
+      cloudinaryUrl: cloudinaryUrl,
       success: true
     });
     console.log('[analysisController.js][success] ✅ Resume analyzed and saved');
   } catch (error) {
     console.error('Error in analyze-resume route:', error);
-    // Always cleanup uploaded file on error
-    if (filePath && fs.existsSync(filePath)) {
-      console.log('[analysisController.js][error] ❌ Cleaning up uploaded file after error');
-      fs.unlink(filePath, (err) => {
-        if (err) console.error('Error deleting file during cleanup:', err);
-        else console.log('[analysisController.js] ✅ File cleaned up after error');
-      });
-    }
     res.status(500).json({ error: error.message || 'Internal server error' });
   }
 }

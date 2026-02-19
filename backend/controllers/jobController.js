@@ -52,7 +52,7 @@ Provide 5 detailed job recommendations in the following JSON format:
 Ensure recommendations are realistic and aligned with the candidate's current skill level and areas for improvement.`;
 
         // Get response from Gemini
-        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
         const result = await model.generateContent(prompt);
         const response = await result.response;
         const jobRecommendations = JSON.parse(response.text());

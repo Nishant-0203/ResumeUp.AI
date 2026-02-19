@@ -228,7 +228,7 @@ const Analysis = () => {
               rel="noopener noreferrer"
               className="text-blue-600 hover:underline"
             >
-              <strong>Sujoy Dutta</strong>
+              <strong>Nishant Bhalla</strong>
             </a>
           </p>
         </footer>

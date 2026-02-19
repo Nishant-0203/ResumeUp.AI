@@ -4,10 +4,28 @@ const { upload } = require('../middleware/upload');
 const auth = require('../middleware/auth');
 const analysisController = require('../controllers/analysisController');
 
+// Wrap multer upload with error handling
 router.post(
   '/analyze-resume',
   auth,
-  upload.single('resume'),
+  (req, res, next) => {
+    upload.single('resume')(req, res, (err) => {
+      if (err) {
+        console.error('[analysisRoutes] Upload error:', err.message);
+        if (err.code === 'ECONNRESET') {
+          return res.status(503).json({ 
+            error: 'Connection to cloud storage was reset. Please try again.',
+            details: err.message 
+          });
+        }
+        return res.status(400).json({ 
+          error: 'File upload failed', 
+          details: err.message 
+        });
+      }
+      next();
+    });
+  },
   analysisController.analyzeResumeHandler
 );
 
