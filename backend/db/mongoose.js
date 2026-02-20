@@ -13,15 +13,11 @@ const options = {
 
 mongoose.connect(MONGODB_URI, options)
   .then(() => {
-    console.log('✅ Successfully connected to MongoDB');
-    console.log(`📊 Database: ${mongoose.connection.name}`);
+    // Connected to MongoDB
   })
   .catch((err) => {
-    console.error('❌Error connecting to MongoDB:', err.message);
-    console.log('\n💡 Troubleshooting tips:');
-    console.log('1. Check MongoDB Atlas Network Access - whitelist your IP or use 0.0.0.0/0');
-    console.log('2. Verify your cluster is active (not paused)');
-    console.log('3. Check your username/password in the connection string');
+    console.error('Error connecting to MongoDB:', err.message);
+    process.exit(1);
   });
 
 module.exports = mongoose; 

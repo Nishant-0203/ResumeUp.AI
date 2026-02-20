@@ -14,14 +14,9 @@ const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 // Extract text from PDF buffer
 async function extractTextFromPDF(buffer) {
   try {
-    console.log('[extractTextFromPDF] Processing PDF buffer, size:', buffer.length, 'bytes');
-    
     const data = await pdfParse(buffer);
-    
-    console.log('[extractTextFromPDF] Successfully extracted text, length:', data.text.length, 'characters');
     return data.text;
   } catch (error) {
-    console.error('Error extracting text from PDF:', error.message);
     throw new Error('Failed to extract text from PDF');
   }
 }
@@ -38,10 +33,8 @@ async function uploadToCloudinary(buffer, filename) {
       },
       (error, result) => {
         if (error) {
-          console.error('[uploadToCloudinary] Upload failed:', error);
           reject(error);
         } else {
-          console.log('[uploadToCloudinary] Upload successful:', result.secure_url);
           resolve(result.secure_url);
         }
       }
@@ -56,7 +49,6 @@ async function uploadToCloudinary(buffer, filename) {
 // Analyze resume using Gemini AI and get JSON
 async function analyzeResume(resumeText, jobDescription = null) {
   if (!resumeText) {
-    console.log('[analysisController.js][if] ❌ No resumeText provided');
     throw new Error('Resume text is required for analysis');
   }
   try {
@@ -75,7 +67,6 @@ async function analyzeResume(resumeText, jobDescription = null) {
     ${resumeText}
     `;
     if (jobDescription && jobDescription.trim()) {
-      console.log('[analysisController.js][if] ✅ jobDescription provided');
       basePrompt += `
       Additionally, compare this resume to the following job description:
       Job Description:
@@ -91,19 +82,15 @@ async function analyzeResume(resumeText, jobDescription = null) {
     try {
       const match = text.match(/\{[\s\S]*\}/);
       if (match) {
-        console.log('[analysisController.js][if] ✅ JSON found in Gemini response');
         json = JSON.parse(match[0]);
       } else {
-        console.log('[analysisController.js][else] ❌ No JSON found in Gemini response');
         throw new Error('No JSON found in Gemini response');
       }
     } catch (err) {
-      console.error('Failed to parse JSON from Gemini response:', err);
       throw new Error('Gemini did not return valid JSON.');
     }
     return { raw: text, json };
   } catch (error) {
-    console.error('Error analyzing resume:', error);
     throw new Error('Failed to analyze resume using AI');
   }
 }
@@ -113,15 +100,8 @@ async function analyzeResumeHandler(req, res) {
   let cloudinaryUrl = null;
   try {
     if (!req.file) {
-      console.log('[analysisController.js][if] ❌ No resume file uploaded');
       return res.status(400).json({ error: 'No resume file uploaded' });
     }
-    
-    console.log('[analyzeResumeHandler] File received:', {
-      originalname: req.file.originalname,
-      size: req.file.size,
-      mimetype: req.file.mimetype
-    });
     
     const jobDescription = req.body.jobDescription || '';
     
@@ -129,18 +109,13 @@ async function analyzeResumeHandler(req, res) {
     const resumeText = await extractTextFromPDF(req.file.buffer);
     
     if (!resumeText.trim()) {
-      console.log('[analysisController.js][if] ❌ Could not extract text from PDF');
       return res.status(400).json({ error: 'Could not extract text from the PDF. Please ensure the PDF contains readable text.' });
     }
-    
-    console.log('[analyzeResumeHandler] Text extracted successfully, length:', resumeText.length);
     
     // Upload to Cloudinary for storage
     try {
       cloudinaryUrl = await uploadToCloudinary(req.file.buffer, req.file.originalname);
-      console.log('[analyzeResumeHandler] File uploaded to Cloudinary:', cloudinaryUrl);
     } catch (uploadError) {
-      console.error('[analyzeResumeHandler] Cloudinary upload failed, continuing without storage:', uploadError.message);
       // Continue with analysis even if upload fails
     }
     
@@ -165,9 +140,7 @@ async function analyzeResumeHandler(req, res) {
       cloudinaryUrl: cloudinaryUrl,
       success: true
     });
-    console.log('[analysisController.js][success] ✅ Resume analyzed and saved');
   } catch (error) {
-    console.error('Error in analyze-resume route:', error);
     res.status(500).json({ error: error.message || 'Internal server error' });
   }
 }
@@ -177,21 +150,17 @@ async function getAnalysisById(req, res) {
   try {
     const { analysisId } = req.params;
     if (!require('mongoose').Types.ObjectId.isValid(analysisId)) {
-      console.log('[analysisController.js][if] ❌ Invalid analysis ID format');
       return res.status(400).json({ error: 'Invalid analysis ID format' });
     }
     const analysis = await Analysis.findById(analysisId);
     if (!analysis) {
-      console.log('[analysisController.js][if] ❌ Analysis not found');
       return res.status(404).json({ error: 'Analysis not found' });
     }
     res.json({
       analysis: analysis,
       success: true
     });
-    console.log('[analysisController.js][success] ✅ Analysis fetched by ID');
   } catch (error) {
-    console.error('Error fetching analysis:', error);
     res.status(500).json({ error: error.message || 'Failed to fetch analysis' });
   }
 }
@@ -204,9 +173,7 @@ async function getAllAnalyses(req, res) {
       analyses: analyses,
       success: true
     });
-    console.log('[analysisController.js][success] ✅ All analyses fetched for user:', req.user.id);
   } catch (error) {
-    console.error('Error fetching analyses:', error);
     res.status(500).json({ error: error.message || 'Failed to fetch analyses' });
   }
 }

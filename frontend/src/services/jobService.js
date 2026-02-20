@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api/jobs';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+const API_URL = `${API_BASE_URL}/jobs`;
 
 const getAuthToken = () => {
     return localStorage.getItem('token');
@@ -16,7 +17,6 @@ export const getRecommendedJobs = async () => {
         });
         return response.data;
     } catch (error) {
-        console.error('Job recommendation error:', error.response?.data || error);
         throw error.response?.data || error.message;
     }
 };

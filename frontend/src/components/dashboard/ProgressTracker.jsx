@@ -69,7 +69,6 @@ export function ProgressTracker() {
           setProgressData(progressItems);
         }
       } catch (err) {
-        console.error('Error fetching progress data:', err);
         setError('Failed to load progress data');
       } finally {
         setLoading(false);

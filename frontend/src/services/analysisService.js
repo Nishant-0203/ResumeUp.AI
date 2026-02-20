@@ -9,7 +9,6 @@ export const analysisService = {
       const response = await axios.get(`${API_BASE_URL}/analyses`);
       return response.data;
     } catch (error) {
-      console.error('Error fetching user analyses:', error);
       throw error;
     }
   },
@@ -20,7 +19,6 @@ export const analysisService = {
       const response = await axios.get(`${API_BASE_URL}/analysis/${analysisId}`);
       return response.data;
     } catch (error) {
-      console.error('Error fetching analysis:', error);
       throw error;
     }
   },
@@ -35,7 +33,6 @@ export const analysisService = {
       });
       return response.data;
     } catch (error) {
-      console.error('Error analyzing resume:', error);
       throw error;
     }
   },
@@ -46,7 +43,6 @@ export const analysisService = {
       const response = await axios.post(`${API_BASE_URL}/generate-quiz/${analysisId}`);
       return response.data;
     } catch (error) {
-      console.error('Error generating quiz:', error);
       throw error;
     }
   }

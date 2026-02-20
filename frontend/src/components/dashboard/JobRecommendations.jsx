@@ -29,11 +29,9 @@ const JobRecommendations = () => {
                 // Handle specific error messages from the backend
                 setError(data.message);
             } else {
-                console.error('Invalid jobs data:', data);
                 setError('Received invalid job data format');
             }
         } catch (err) {
-            console.error('Job fetch error:', err);
             if (err.message === 'No resume analysis found') {
                 setError('Please upload and analyze your resume first to get job recommendations');
             } else {

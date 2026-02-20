@@ -27,7 +27,7 @@ export function ResumeAnalysisSummary() {
           setLatestAnalysis(response.analyses[0]); // Most recent analysis
         }
       } catch (err) {
-        console.error('Error fetching analysis:', err);
+
         setError('Failed to load analysis data');
       } finally {
         setLoading(false);

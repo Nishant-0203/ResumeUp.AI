@@ -71,7 +71,6 @@ Ensure recommendations are realistic and aligned with the candidate's current sk
 
         res.json(jobsToSave);
     } catch (error) {
-        console.error('Error generating job recommendations:', error);
         res.status(500).json({
             message: 'Error generating job recommendations',
             details: error.message

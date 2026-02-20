@@ -32,7 +32,7 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
   credentials: true,
 }));
 app.use(express.json());
@@ -49,9 +49,11 @@ app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
-  secure: process.env.NODE_ENV === 'production',
-  httpOnly: true,
-  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  cookie: {
+    secure: process.env.NODE_ENV === 'production',
+    httpOnly: true,
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  }
 }));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -65,7 +67,6 @@ passport.use(new GoogleStrategy({
   try {
     let user = await User.findOne({ email: profile.emails[0].value });
     if (!user) {
-      console.log('[server.js][if] Google user not found, creating new user');
       user = await User.create({
         name: profile.displayName,
         email: profile.emails[0].value,
@@ -74,7 +75,6 @@ passport.use(new GoogleStrategy({
     }
     return done(null, user);
   } catch (err) {
-    console.log('[server.js][else] Error in GoogleStrategy callback');
     return done(err, null);
   }
 }));
@@ -87,7 +87,6 @@ passport.deserializeUser(async (id, done) => {
     const user = await User.findById(id);
     done(null, user);
   } catch (err) {
-    console.log('[server.js][else] Error in deserializeUser');
     done(err, null);
   }
 });
@@ -121,11 +120,9 @@ app.use(errorHandler);
 // Start server with error handling
 const startServer = (port) => {
   app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
-    console.log(`Health check: http://localhost:${port}/api/health`);
+    // Server is running
   }).on('error', (err) => {
     if (err.code === 'EADDRINUSE') {
-      console.log(`Port ${port} is busy, trying port ${port + 1}...`);
       startServer(port + 1);
     } else {
       console.error('Server error:', err);

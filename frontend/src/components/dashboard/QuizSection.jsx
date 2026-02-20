@@ -68,7 +68,6 @@ export function QuizSection() {
           });
         }
       } catch (err) {
-        console.error('Error fetching quiz data:', err);
         setError('Failed to load quiz data');
       } finally {
         setLoading(false);

@@ -57,7 +57,6 @@ export function SkillImprovementSection() {
           setResources(newResources);
         }
       } catch (err) {
-        console.error('Error fetching analysis data:', err);
         setError('Failed to load improvement recommendations');
       } finally {
         setLoading(false);

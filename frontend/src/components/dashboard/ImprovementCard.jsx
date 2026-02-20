@@ -24,7 +24,7 @@ export function ImprovementCard() {
           setAnalysisData(response.analyses[0]);
         }
       } catch (err) {
-        console.error('Error fetching analysis data:', err);
+        // Error loading analysis data
       } finally {
         setLoading(false);
       }

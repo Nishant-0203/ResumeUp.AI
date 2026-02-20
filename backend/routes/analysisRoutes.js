@@ -11,7 +11,6 @@ router.post(
   (req, res, next) => {
     upload.single('resume')(req, res, (err) => {
       if (err) {
-        console.error('[analysisRoutes] Upload error:', err.message);
         if (err.code === 'ECONNRESET') {
           return res.status(503).json({ 
             error: 'Connection to cloud storage was reset. Please try again.',

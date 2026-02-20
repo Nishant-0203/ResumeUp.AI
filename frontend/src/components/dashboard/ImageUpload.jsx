@@ -63,7 +63,6 @@ export function ImageUpload({ onImageUpdate }) {
         setError(result.error || 'Failed to upload image.');
       }
     } catch (err) {
-      console.error('Error uploading image:', err);
       setError('Failed to upload image. Please try again.');
     } finally {
       setUploading(false);

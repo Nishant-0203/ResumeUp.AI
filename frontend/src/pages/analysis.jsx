@@ -52,12 +52,10 @@ const Analysis = () => {
         setAnalysis(response.analysis);
         setAnalysisId(response.analysisId);
         setStructuredData(response.structuredData);
-        console.log('Analysis stored with ID:', response.analysisId);
       } else {
         setError('Analysis completed but there was an issue saving the data.');
       }
     } catch (err) {
-      console.error('Analysis error:', err);
       setError(err.response?.data?.error || 'Analysis failed. Please try again.');
     } finally {
       setLoading(false);

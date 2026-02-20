@@ -28,7 +28,7 @@ export function UploadResumeSection() {
           setLatestAnalysis(response.analyses[0]);
         }
       } catch (err) {
-        console.error('Error fetching analysis:', err);
+        // Error fetching analysis
       } finally {
         setLoading(false);
       }

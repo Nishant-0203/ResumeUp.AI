@@ -7,21 +7,13 @@ function calculateCategoryScores(quizzes, selectedAnswers) {
   const categoryTotals = {};
   const categoryCorrect = {};
   
-  console.log('Calculating category scores for quizzes:', quizzes.length);
-  console.log('Selected answers:', selectedAnswers);
-  
   quizzes.forEach((qz, quizIdx) => {
-    console.log(`Processing quiz ${quizIdx} for weakness: ${qz.weakness}`);
     (qz.quiz.questions || []).forEach((question, qIdx) => {
       const cat = question.category || 'General';
-      console.log(`Question ${qIdx + 1} category: ${cat}`);
       
       categoryTotals[cat] = (categoryTotals[cat] || 0) + 1;
       if (selectedAnswers[quizIdx]?.[qIdx] === question.correctAnswer) {
         categoryCorrect[cat] = (categoryCorrect[cat] || 0) + 1;
-        console.log(`Correct answer for category ${cat}`);
-      } else {
-        console.log(`Incorrect answer for category ${cat}`);
       }
     });
   });
@@ -32,10 +24,8 @@ function calculateCategoryScores(quizzes, selectedAnswers) {
     const correct = categoryCorrect[cat] || 0;
     const total = categoryTotals[cat] || 0;
     scores[cat] = total > 0 ? Math.round((correct / total) * 100) : 0;
-    console.log(`Category ${cat}: ${correct}/${total} = ${scores[cat]}%`);
   });
   
-  console.log('Final category scores:', scores);
   return scores;
 }
 

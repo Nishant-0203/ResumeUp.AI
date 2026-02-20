@@ -103,7 +103,7 @@ export const UserProvider = ({ children }) => {
         setLoading(false);
         return;
       } catch (error) {
-        console.error('Error parsing stored user data:', error);
+        // Failed to parse stored user data
       }
     }
 
@@ -113,7 +113,6 @@ export const UserProvider = ({ children }) => {
       setUser(response.data.user);
       localStorage.setItem('user', JSON.stringify(response.data.user));
     } catch (error) {
-      console.error('Auth check failed:', error);
       logout();
     } finally {
       setLoading(false);

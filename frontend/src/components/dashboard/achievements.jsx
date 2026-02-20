@@ -23,7 +23,7 @@ export function AchievementsSection() {
           setAnalysisData(response.analyses[0]);
         }
       } catch (err) {
-        console.error('Error fetching analysis data:', err);
+        // Error loading achievement data
       } finally {
         setLoading(false);
       }
