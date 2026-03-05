@@ -10,14 +10,14 @@ import {
 export function FaqAccordion() {
   const faqs = [
     {
-      question: "How does ResumeIQ analyze my resume?",
+      question: "How does ResumeUp.AI analyze my resume?",
       answer:
-        "ResumeIQ uses advanced AI to parse your resume into structured data, analyzing key components like skills, experience, education, and formatting. It compares your resume against industry standards and job requirements to provide actionable insights and recommendations.",
+        "ResumeUp.AI uses advanced AI to parse your resume into structured data, analyzing key components like skills, experience, education, and formatting. It compares your resume against industry standards and job requirements to provide actionable insights and recommendations.",
     },
     {
-      question: "What makes ResumeIQ different from other resume tools?",
+      question: "What makes ResumeUp.AI different from other resume tools?",
       answer:
-        "Unlike basic resume checkers, ResumeIQ provides personalized career guidance through our unique quiz system that adapts to your skill profile. We also offer company matching specifically for MERN stack and other tech roles, helping you target the right opportunities.",
+        "Unlike basic resume checkers, ResumeUp.AI provides personalized career guidance through our unique quiz system that adapts to your skill profile. We also offer company matching specifically for MERN stack and other tech roles, helping you target the right opportunities.",
     },
     {
       question: "How accurate is the ATS compatibility check?",
@@ -25,9 +25,9 @@ export function FaqAccordion() {
         "Our ATS compatibility check simulates how your resume would perform in leading Applicant Tracking Systems. We've trained our AI on real-world ATS data to ensure over 95% accuracy in predicting how your resume will be parsed by employers.",
     },
     {
-      question: "Can I use ResumeIQ if I'm not a developer?",
+      question: "Can I use ResumeUp.AI if I'm not a developer?",
       answer:
-        "While we have specialized insights for MERN stack and tech roles, ResumeIQ supports professionals across all industries. Our AI adapts its analysis and recommendations based on your specific career field and goals.",
+        "While we have specialized insights for MERN stack and tech roles, ResumeUp.AI supports professionals across all industries. Our AI adapts its analysis and recommendations based on your specific career field and goals.",
     },
     {
       question: "How often can I update my resume?",

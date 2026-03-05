@@ -15,7 +15,7 @@ export function Testimonials() {
       company: "TechCorp",
       image: "/placeholder.svg?height=80&width=80",
       quote:
-        "ResumeIQ transformed my job search. The AI analysis pinpointed exactly what was missing from my resume, and within two weeks of making the suggested changes, I landed my dream job at a top tech company.",
+        "ResumeUp.AI transformed my job search. The AI analysis pinpointed exactly what was missing from my resume, and within two weeks of making the suggested changes, I landed my dream job at a top tech company.",
     },
     {
       name: "Sarah Chen",
@@ -23,7 +23,7 @@ export function Testimonials() {
       company: "InnovateSoft",
       image: "/placeholder.svg?height=80&width=80",
       quote:
-        "The personalized career quiz was eye-opening. It identified strengths I hadn't emphasized and suggested skills to develop. Following ResumeIQ's recommendations helped me transition from junior to senior developer in just 8 months.",
+        "The personalized career quiz was eye-opening. It identified strengths I hadn't emphasized and suggested skills to develop. Following ResumeUp.AI's recommendations helped me transition from junior to senior developer in just 8 months.",
     },
     {
       name: "Michael Rodriguez",
@@ -31,7 +31,7 @@ export function Testimonials() {
       company: "WebStack Solutions",
       image: "/placeholder.svg?height=80&width=80",
       quote:
-        "As someone specializing in MERN stack development, ResumeIQ's targeted company matches were incredibly accurate. The platform suggested companies I hadn't considered but that were perfect fits for my experience and career goals.",
+        "As someone specializing in MERN stack development, ResumeUp.AI's targeted company matches were incredibly accurate. The platform suggested companies I hadn't considered but that were perfect fits for my experience and career goals.",
     },
   ]
 

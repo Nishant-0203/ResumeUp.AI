@@ -70,7 +70,7 @@ export function Navbar() {
                 <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-[#f8a4a8] to-[#a78bfa] flex items-center justify-center shadow-lg">
                   <span className="text-white font-bold text-xl">R</span>
                 </div>
-                <span className="ml-3 text-xl font-bold">ResumeIQ</span>
+                <span className="ml-3 text-xl font-bold">ResumeUp.AI</span>
               </Link>
             </div>
 

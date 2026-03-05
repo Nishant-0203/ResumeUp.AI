@@ -87,7 +87,7 @@ export default function Home() {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="text-4xl font-bold text-center mb-16">How ResumeIQ Works</h2>
+          <h2 className="text-4xl font-bold text-center mb-16">How ResumeUp.AI Works</h2>
           <HowItWorks />
         </motion.div>
       </section>
@@ -136,7 +136,7 @@ export default function Home() {
         >
           <h2 className="text-4xl font-bold text-center mb-6">Live Insights Preview</h2>
           <p className="text-xl text-center text-gray-600 max-w-3xl mx-auto mb-16">
-            See how ResumeIQ transforms your resume data into actionable career intelligence
+            See how ResumeUp.AI transforms your resume data into actionable career intelligence
           </p>
           <LiveInsightsPreview />
         </motion.div>

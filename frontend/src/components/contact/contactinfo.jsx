@@ -9,8 +9,8 @@ export function ContactInfo() {
     {
       icon: <Mail className="h-6 w-6" />,
       label: "Email",
-      value: "hello@resumeiq.com",
-      href: "mailto:hello@resumeiq.com",
+      value: "hello@resumeup.ai",
+      href: "mailto:hello@resumeup.ai",
     },
     {
       icon: <Phone className="h-6 w-6" />,
@@ -21,8 +21,8 @@ export function ContactInfo() {
     {
       icon: <Linkedin className="h-6 w-6" />,
       label: "LinkedIn",
-      value: "@ResumeIQ",
-      href: "https://linkedin.com/company/resumeiq",
+      value: "@ResumeUp.AI",
+      href: "https://linkedin.com/company/resumeup-ai",
     },
     {
       icon: <MapPin className="h-6 w-6" />,

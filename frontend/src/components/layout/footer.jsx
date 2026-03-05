@@ -29,7 +29,7 @@ export function Footer() {
               <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-[#f8a4a8] to-[#a78bfa] flex items-center justify-center shadow-lg">
                 <span className="text-white font-bold text-xl">R</span>
               </div>
-              <span className="ml-3 text-xl font-bold">ResumeIQ</span>
+              <span className="ml-3 text-xl font-bold">ResumeUp.AI</span>
             </div>
             <p className="text-gray-600 mb-6 max-w-md">
               Transforming careers through AI-powered resume analysis and personalized career guidance for the modern
@@ -107,7 +107,7 @@ export function Footer() {
         </div>
 
         <div className="mt-12 pt-8 border-t border-gray-100 text-center text-gray-500 text-sm">
-          <p>© {new Date().getFullYear()} ResumeIQ. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} ResumeUp.AI. All rights reserved.</p>
         </div>
       </div>
     </footer>
